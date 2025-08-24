@@ -1,9 +1,12 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+let
+  local = import ../local.nix;
+in {
   imports = [ 
     ../modules/base.nix 
     ../modules/homebrew.nix 
   ];
 
-  system.primaryUser = builtins.getEnv "SUDO_USER";
+  system.primaryUser = local.primaryUser;
   homebrew.enable = true;
 }

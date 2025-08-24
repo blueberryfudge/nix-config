@@ -1,9 +1,12 @@
-{ pkgs, ...}: {
-  imports = [
-    ../modules/base.nix
-    ../modules/homebrew.nix
+{ pkgs, ... }:
+let
+  local = import ../local.nix;
+in {
+  imports = [ 
+    ../modules/base.nix 
+    ../modules/homebrew.nix 
   ];
 
-  system.primaryUser = builtins.getEnv "USER";
-  homebrew.enable = true;
+  system.primaryUser = local.primaryUser;
+  homebrew.enable = false;
 }
