@@ -17,11 +17,13 @@ with pkgs; [
   # F
   fd
   fzf
+  ffmpeg
 
   # G
   gh
   go
   gopls
+  glow
 
   # J
   jq
@@ -29,14 +31,21 @@ with pkgs; [
   # N
   neovim
 
+  # P
+  pqrs
+
   # R
   ripgrep
 
   # S
   starship
+  sqlite
 
   # U
   uv
+
+  # W
+  wget
 
   # Z
   zip
