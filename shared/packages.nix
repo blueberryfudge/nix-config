@@ -11,12 +11,16 @@ with pkgs; [
   # D
   # docker
 
+  # E
+  eza
+
   # F
   fd
   fzf
 
   # G
   gh
+  go
   gopls
 
   # J
@@ -28,9 +32,13 @@ with pkgs; [
   # R
   ripgrep
 
+  # S
+  starship
+
   # U
   uv
 
   # Z
   zip
+  zellij
 ]
