@@ -4,6 +4,6 @@
     ../modules/homebrew.nix 
   ];
 
-  system.primaryUser = builtins.getEnv "USER";
+  system.primaryUser = builtins.getEnv "SUDO_USER";
   homebrew.enable = true;
 }
