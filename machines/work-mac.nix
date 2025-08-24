@@ -4,6 +4,6 @@
     ../modules/homebrew.nix 
   ];
 
-  system.primaryUser = "";
+  system.primaryUser = "edb";
   homebrew.enable = false;
 }
