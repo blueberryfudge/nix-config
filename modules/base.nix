@@ -12,7 +12,7 @@
       enable = true;
       reattach = true;
       touchIdAuth = true;
-      waatchIdAuth = true;
+      watchIdAuth = true;
     };
 
     sudo = {
