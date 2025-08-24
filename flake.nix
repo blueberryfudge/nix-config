@@ -12,6 +12,10 @@
       "work-mac" = nix-darwin.lib.darwinSystem {
         modules = [ ./machines/work-mac.nix];
       };
+
+      "personal-mac" = nix-darwin.lib.darwinSystem {
+        modules = [ ./machines/personal-mac.nix];
+      };
     };
   };
 }
