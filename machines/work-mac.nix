@@ -1,9 +1,17 @@
 { pkgs, ... }: {
   imports = [ 
-    ../modules/base.nix 
+    ../modules/darwin.nix 
     ../modules/homebrew.nix 
+    ../modules/darwin
+    ../modules/shared
   ];
+  core-git.enable = true;
+  core-zsh.enable = true;
 
-  system.primaryUser = "edb";
-  homebrew.enable = false;
+  # optional modules
+  cli-tooling.enable = true;
+  devops-tooling.enable = true;
+  data.enable = true;
+  lang-tooling.enable = true;
+
 }
