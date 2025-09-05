@@ -107,7 +107,11 @@ in
       enable = true;
       addKeysToAgent = "yes";
       forwardAgent = true;
-      useKeychain = true;
+
+      extraConfig = ''
+        UseKeychain yes
+        AddKeysToAgent yes
+      '';
 
       matchBlocks = {
         "github.com" = {

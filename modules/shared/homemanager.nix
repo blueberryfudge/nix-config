@@ -20,6 +20,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+    backupFileExtension = "bak";
 
     users = {
       "${user}" = import homeModule;
