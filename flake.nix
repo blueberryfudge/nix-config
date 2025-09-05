@@ -1,15 +1,15 @@
 {
   description = "Multi-machine nix-darwin configurations";
 
-
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/release-25.05";
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     darwin = {
-      url = "github:nix-darwin/nix-darwin";
+      url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
@@ -21,6 +21,7 @@
   outputs =
     inputs@{
       self,
+      nixpkgs-unstable, # TODO: inject as option
       nixpkgs,
       darwin,
       home-manager,
@@ -36,47 +37,49 @@
           system = "aarch64-darwin";
           user = "edb";
           nixDirectory = "~/.config/nix-config";
-          hostModule = ./machines/work-home.nix;
-          machineConfig = ./machines/work-mac.nix;
+          homeModule = ./hosts/work/home.nix;
+          hostModule = ./hosts/work;
           enableHomebrew = false;
-          enableLunarTools = true;
+          enableLunarTools = false;
         };
 
-       # "personal-mac" = {
-       # system = "aarch64-darwin";
-       # user = "erik";
-       # nixDirectory = "~/.config/nix-config";
-       # hostModule = ./nix/modules/home-personal.nix;
-       # machineConfig = ./machines/personal-mac.nix;
-       # enableHomebrew = false;
-       # enableLunarTools = false;
-      #};
+        # "personal-mac" = {
+        #   system = "aarch64-darwin";
+        #   user = "erik";
+        #   nixDirectory = "~/.config/nix-config";
+        #   hostModule = ./nix/modules/home-personal.nix;
+        #   machineConfig = ./machines/personal-mac.nix;
+        #   enableHomebrew = false;
+        #   enableLunarTools = false;
+        # };
 
       };
-      mkDarwinSystem = hostname: config: darwin.lib.darwinSystem {
-        system = config.system;
-        specialArgs = { 
-          inherit inputs nixfiles;
-          user = config.user;
-        };
-        modules = [
-          config.machineConfig
-          home-manager.darwinModules.home-manager
-        ] ++ (if config.enableHomebrew then [nix-homebrew.darwinModules.nix-homebrew] else [])
-          ++ [
-          (import ./modules/home/homemanager.nix {
-            inherit nixfiles;
+      mkDarwinSystem =
+        hostname: config:
+        darwin.lib.darwinSystem {
+          system = config.system;
+          specialArgs = {
+            inherit inputs nixfiles;
             user = config.user;
-            nixDirectory = config.nixDirectory;
-            hostModule = config.hostModule;
-            inputs = inputs;
-            enableHomebrew = config.enableHomebrew;
-            enableLunarTools = config.enableLunarTools;
-          })
-        ];
-      };
-  
-    in {
+          };
+          modules = [
+            home-manager.darwinModules.home-manager
+            #nix-homebrew.darwinModules.nix-homebrew
+            config.hostModule
+            (import ./modules/shared/homemanager.nix {
+              inherit nixfiles;
+              user = config.user;
+              nixDirectory = config.nixDirectory;
+              homeModule = config.homeModule;
+              inputs = inputs;
+              enableHomebrew = config.enableHomebrew;
+              enableLunarTools = config.enableLunarTools;
+            })
+          ];
+        };
+
+    in
+    {
       darwinConfigurations = builtins.mapAttrs mkDarwinSystem systemConfigs;
     };
-  }
+}

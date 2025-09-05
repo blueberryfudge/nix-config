@@ -1,6 +1,6 @@
 {
   user,
-  hostModule,
+  homeModule,
   inputs,
   nixfiles,
   nixDirectory,
@@ -22,11 +22,11 @@
     useUserPackages = true;
 
     users = {
-      "${user}" = import hostModule;
+      "${user}" = import homeModule;
     };
 
     sharedModules = [
-      ./.
+      ../home
     ];
 
     extraSpecialArgs = {

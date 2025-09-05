@@ -86,15 +86,15 @@ in
           name = Edvard Boguslavskij
           email = edvard.bgs@gmail.com
           signingkey = /Users/edb/.ssh/id_ed25519
-        
+
         [gpg]
           format = ssh
         [commit]
           gpgsign = true
-        
+
         [url "git@github-blueberryfudge"]
           insteadOf = git@github.com
-        
+
         [url "git@github-blueberryfudge"]
               pushInsteadOf = https://github.com
 
@@ -105,25 +105,27 @@ in
     };
     programs.ssh = {
       enable = true;
+      addKeysToAgent = "yes";
+      forwardAgent = true;
+      useKeychain = true;
+
       matchBlocks = {
         "github.com" = {
           user = "git";
           identityFile = "/Users/edb/.ssh/github";
-          addKeysToAgent = "yes";
-          # useKeychain = true;
+          #addKeysToAgent = "yes";
+          #useKeychain = true;
         };
         "github-blueberryfudge" = {
           user = "git";
           identityFile = "/Users/edb/.ssh/id_ed25519";
-          addKeysToAgent = "yes";
-          # useKeychain = true;
+          #addKeysToAgent = "yes";
+          #useKeychain = true;
         };
 
-        # NOTE: don't need to add blocks for other directories if sshCommand is set in config
-
         "*" = {
-          addKeysToAgent = "yes";
-          # useKeychain = true;
+          #addKeysToAgent = "yes";
+          #useKeychain = true;
           identitiesOnly = true;
         };
       };

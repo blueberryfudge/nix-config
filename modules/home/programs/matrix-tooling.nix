@@ -8,10 +8,10 @@
 
 {
   options = {
-    data.enable = lib.mkEnableOption "enables data tooling";
+    matrix-tooling.enable = lib.mkEnableOption "enables matrix-tooling tooling";
   };
 
-  config = lib.mkIf config.data.enable {
+  config = lib.mkIf config.matrix-tooling.enable {
     home.packages = with pkgs; [
       # java/scala tooling
       scala-next # modern scala 3
