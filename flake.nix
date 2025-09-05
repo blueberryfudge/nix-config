@@ -14,7 +14,9 @@
     };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     flake-utils.url = "github:numtide/flake-utils";
-    lunar-tools.url = "git+ssh://git@github.com/lunarway/lw-nix";
+    lunar-tools = {
+      url = "git+ssh://git@github.com/lunarway/lw-nix?ref=feat/zsh-plugin";
+    };
   };
   outputs =
     inputs@{
@@ -33,9 +35,8 @@
         "work-mac" = {
           system = "aarch64-darwin";
           user = "edb";
-          gitName = "edvardxlunar";
           nixDirectory = "~/.config/nix-config";
-          hostModule = ./nix/modules/home.nix;
+          hostModule = ./machines/work-home.nix;
           machineConfig = ./machines/work-mac.nix;
           enableHomebrew = false;
           enableLunarTools = true;
@@ -44,7 +45,6 @@
        # "personal-mac" = {
        # system = "aarch64-darwin";
        # user = "erik";
-       # gitName = "";
        # nixDirectory = "~/.config/nix-config";
        # hostModule = ./nix/modules/home-personal.nix;
        # machineConfig = ./machines/personal-mac.nix;
@@ -64,11 +64,10 @@
           home-manager.darwinModules.home-manager
         ] ++ (if config.enableHomebrew then [nix-homebrew.darwinModules.nix-homebrew] else [])
           ++ [
-          (import ./nix/modules/home/homemanager.nix {
+          (import ./modules/home/homemanager.nix {
             inherit nixfiles;
             user = config.user;
             nixDirectory = config.nixDirectory;
-            gitName = config.gitName;
             hostModule = config.hostModule;
             inputs = inputs;
             enableHomebrew = config.enableHomebrew;

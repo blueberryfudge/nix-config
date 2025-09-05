@@ -9,7 +9,7 @@
   nix-homebrew = {
     inherit user;
     enable = enableHomebrew;
-    enableRosetta = true;
+    enableRosetta = enableHomebrew;
     mutableTaps = true;
 
 

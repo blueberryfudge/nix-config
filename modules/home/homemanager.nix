@@ -3,6 +3,10 @@
   hostModule,
   inputs,
   nixfiles,
+  nixDirectory,
+  enableHomebrew,
+  enableLunarTools,
+  ...
 }:
 
 {
@@ -28,6 +32,9 @@
     extraSpecialArgs = {
       inherit inputs;
       inherit nixfiles;
+      inherit nixDirectory;
+      inherit enableHomebrew;
+      inherit enableLunarTools;
     };
   };
 }

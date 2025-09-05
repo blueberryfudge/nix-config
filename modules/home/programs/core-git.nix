@@ -109,21 +109,21 @@ in
         "github.com" = {
           user = "git";
           identityFile = "/Users/edb/.ssh/github";
-          addKeysToAgent = true;
-          useKeychain = true;
+          addKeysToAgent = "yes";
+          # useKeychain = true;
         };
         "github-blueberryfudge" = {
           user = "git";
           identityFile = "/Users/edb/.ssh/id_ed25519";
-          addKeysToAgent = true;
-          useKeychain = true;
+          addKeysToAgent = "yes";
+          # useKeychain = true;
         };
 
         # NOTE: don't need to add blocks for other directories if sshCommand is set in config
 
         "*" = {
           addKeysToAgent = "yes";
-          useKeychain = true;
+          # useKeychain = true;
           identitiesOnly = true;
         };
       };
