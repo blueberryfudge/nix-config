@@ -121,18 +121,14 @@ in
           #useKeychain = true;
         };
         "github-blueberryfudge" = {
-          "github.com" = {
-            user = "git";
-            identityFile = "/Users/edb/.ssh/id_ed25519";
-            #addKeysToAgent = "yes";
-            #useKeychain = true;
-          };
-
-          "*" = {
-            #addKeysToAgent = "yes";
-            #useKeychain = true;
-            identitiesOnly = true;
-          };
+          hostname = "github.com";
+          user = "git";
+          identityFile = "/Users/edb/.ssh/id_ed25519";
+          #addKeysToAgent = "yes";
+          #useKeychain = true;
+        };
+        "*" = {
+          identitiesOnly = true;
         };
       };
     };
