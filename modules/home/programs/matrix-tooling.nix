@@ -21,7 +21,6 @@
 
       # python tooling
       uv # pip replacement
-      python312 # generic programming language
 
       # data tooling
       duckdb # inprocess analytical database

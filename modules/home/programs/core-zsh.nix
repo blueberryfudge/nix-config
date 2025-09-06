@@ -30,7 +30,7 @@
       # defaultKeymap = "viins";
 
       # NOTE: use-this for debugging performance issues
-      zprof.enable = true;
+      #zprof.enable = true;
 
       plugins = [
         # {
@@ -53,7 +53,7 @@
       ];
 
       shellAliases = {
-        ls = "ez -all --icons";
+        ls = "eza -all --icons";
         lg = "lazygit";
         nu = "pushd ${nixDirectory} && nix flake update && popd";
         ns = "pushd ${nixDirectory} && sudo darwin-rebuild --flake .#aarch64-darwin && popd";
@@ -62,7 +62,6 @@
         k8senv = "kubectl config use-context $(kubectl config get-contexts --no-headers | sed 's/^*//g' | awk '{print $1}' | fzf --prompt \"Choose k8s context: \")";
         "docker-compose" = "docker compose";
         hubble = "aws_wrapper hubble";
-        k9s = "aws_wrapper k9s";
       };
 
       history.size = 10000;

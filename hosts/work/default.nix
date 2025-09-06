@@ -1,9 +1,9 @@
-{ user, pkgs, ... }:
+{ pkgs, user, ... }:
 
 {
   imports = [
     ../../modules/darwin
-    #../modules/shared
+    ../../modules/shared
   ];
 
   nixpkgs = {
@@ -18,8 +18,14 @@
   ids.gids.nixbld = 350;
 
   nix = {
-    enable = false;
+    # Note: turn off for determinant systems nix
     settings = {
+      max-jobs = "auto";
+      cores = 0; # Use all cores
+      trusted-users = [
+        "@admin"
+        "${user}"
+      ];
       substituters = [
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
@@ -29,8 +35,32 @@
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       ];
     };
-  };
 
+    optimise = {
+      automatic = true;
+      interval = {
+        Weekday = 4;
+        Hour = 2;
+        Minute = 0;
+      };
+    };
+
+    gc = {
+      automatic = true;
+      interval = {
+        Weekday = 0;
+        Hour = 2;
+        Minute = 0;
+      };
+      options = "--delete-older-than 30d";
+    };
+
+    extraOptions = ''
+      extra-platforms = aarch64-darwin
+    '';
+
+    distributedBuilds = true;
+  };
   # Turn off NIX_PATH warnings now that we're using flakes
   system.checks.verifyNixPath = false;
 
@@ -39,10 +69,10 @@
   ];
   programs.zsh.enable = true;
 
-  # environment.variables = {
-  #   EDITOR = "hx";
-  #   VISUAL = "hx";
-  # };
+  environment.variables = {
+    EDITOR = "hx";
+    VISUAL = "hx";
+  };
 
   security = {
     pam.services.sudo_local = {
@@ -69,29 +99,6 @@
         AppleShowAllExtensions = true;
         ApplePressAndHoldEnabled = false;
         NSWindowShouldDragOnGesture = true;
-
-        # 120, 90, 60, 30, 12, 6, 2
-        KeyRepeat = 2;
-
-        # 120, 94, 68, 35, 25, 15
-        InitialKeyRepeat = 15;
-
-        # Automatically hide and show the menu bar
-        # TODO: remove after sketchybar
-        _HIHideMenuBar = false;
-
-        "com.apple.mouse.tapBehavior" = 1;
-        "com.apple.sound.beep.volume" = 0.0;
-        "com.apple.sound.beep.feedback" = 0;
-      };
-
-      dock = {
-        autohide = true;
-        show-recents = false;
-        launchanim = true;
-        orientation = "left";
-        tilesize = 48;
-        mru-spaces = false;
       };
 
       finder = {
@@ -99,18 +106,19 @@
         _FXShowPosixPathInTitle = false;
       };
 
+
       trackpad = {
-        Clicking = true;
-        TrackpadThreeFingerDrag = false; # true is no bueno
+        # Clicking = true;
+        # TrackpadThreeFingerDrag = false; # true is no bueno
       };
 
       screencapture.location = "~/Pictures/Screenshots";
-      screensaver.askForPasswordDelay = 10; # in seconds
+      #screensaver.askForPasswordDelay = 10; # in seconds
     };
 
     keyboard = {
-      enableKeyMapping = true;
-      remapCapsLockToEscape = true;
+      # enableKeyMapping = true;
+      # remapCapsLockToEscape = true;
     };
   };
 }
