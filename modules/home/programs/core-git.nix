@@ -105,30 +105,29 @@ in
     };
     programs.ssh = {
       enable = true;
-      addKeysToAgent = "yes";
-      forwardAgent = true;
 
       extraConfig = ''
         UseKeychain yes
-        AddKeysToAgent yes
       '';
 
       matchBlocks = {
         "github.com" = {
           user = "git";
           identityFile = "/Users/edb/.ssh/github";
-          #addKeysToAgent = "yes";
+          addKeysToAgent = "yes";
           #useKeychain = true;
         };
         "github-blueberryfudge" = {
           hostname = "github.com";
           user = "git";
           identityFile = "/Users/edb/.ssh/id_ed25519";
-          #addKeysToAgent = "yes";
+          addKeysToAgent = "yes";
           #useKeychain = true;
         };
         "*" = {
           identitiesOnly = true;
+          addKeysToAgent = "yes";
+          forwardAgent = true;
         };
       };
     };

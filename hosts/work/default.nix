@@ -18,8 +18,10 @@
   ids.gids.nixbld = 350;
 
   nix = {
+    enable = true;
     # Note: turn off for determinant systems nix
     settings = {
+      experimental-features = ["nix-command" "flakes"];
       max-jobs = "auto";
       cores = 0; # Use all cores
       trusted-users = [
