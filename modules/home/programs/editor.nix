@@ -20,11 +20,8 @@
       metals
       helix
       nil
-      rust-analyzer
-      ruff-lsp
       marksman
       yaml-language-server
-      goimports
       prettier
     ];
 
