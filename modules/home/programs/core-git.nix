@@ -105,7 +105,8 @@ in
     };
     programs.ssh = {
       enable = true;
-
+      enableDefaultConfig = false;
+        
       extraConfig = ''
         UseKeychain yes
       '';
