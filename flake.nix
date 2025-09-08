@@ -2,8 +2,8 @@
   description = "Multi-machine nix-darwin configurations";
 
   inputs = {
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs";
+    #nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -22,7 +22,7 @@
   outputs =
     inputs@{
       self,
-      nixpkgs-unstable, # TODO: inject as option
+      #nixpkgs-unstable, # TODO: inject as option
       nixpkgs,
       darwin,
       home-manager,

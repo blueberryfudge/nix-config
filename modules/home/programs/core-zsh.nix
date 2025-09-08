@@ -60,8 +60,8 @@
         "docker-compose" = "docker compose";
         hubble = "aws_wrapper hubble";
         k9s = "k8s_wrapper k9s";
-        kubectl = "k8s_wrapper kubectl";
         helm = "k8s_wrapper helm";
+        kubectl = "k8s_wrapper kubectl";
       };
 
       history.size = 10000;

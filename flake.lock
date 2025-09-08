@@ -394,11 +394,11 @@
         "shuttle": "shuttle"
       },
       "locked": {
-        "lastModified": 1757323147,
-        "narHash": "sha256-uHbQQ+ws7W73hZ5G2ZbxUuYGNOX6BYLu8WEHKnZXJJA=",
+        "lastModified": 1757329223,
+        "narHash": "sha256-sLTPgXSIoLGw0NGbledmqV/L+OrtdpnqMUChfszvnok=",
         "ref": "feat/zsh-plugin",
-        "rev": "0fc59036c92e618e24cc276627c5c6fe84217060",
-        "revCount": 31,
+        "rev": "1151ea4efc763ae942f380d858dfceae90327637",
+        "revCount": 32,
         "type": "git",
         "url": "ssh://git@github.com/lunarway/lw-nix"
       },
@@ -462,22 +462,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-unstable": {
-      "locked": {
-        "lastModified": 1757068644,
-        "narHash": "sha256-NOrUtIhTkIIumj1E/Rsv1J37Yi3xGStISEo8tZm3KW4=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "8eb28adfa3dc4de28e792e3bf49fcf9007ca8ac9",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1756999638,
@@ -496,15 +480,16 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1757322753,
-        "narHash": "sha256-ikSR+seQjnDIylzl8EgLOXHjWVnBQieS0yKJXsb3mWU=",
+        "lastModified": 1757034884,
+        "narHash": "sha256-PgLSZDBEWUHpfTRfFyklmiiLBE1i1aGCtz4eRA3POao=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "84607fd8efabe45b1fe1fcc3f8e4316238b663f4",
+        "rev": "ca77296380960cd497a765102eeb1356eb80fed0",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
+        "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -556,8 +541,7 @@
         "home-manager": "home-manager",
         "lunar-tools": "lunar-tools",
         "nix-homebrew": "nix-homebrew",
-        "nixpkgs": "nixpkgs_3",
-        "nixpkgs-unstable": "nixpkgs-unstable"
+        "nixpkgs": "nixpkgs_3"
       }
     },
     "rust-overlay": {

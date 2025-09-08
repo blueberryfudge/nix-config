@@ -5,6 +5,7 @@ let
 
   excluded = [
     (toString ./default.nix)
+    (toString ./homemanager.nix)
     (toString ./template.nix)
   ];
 
