@@ -4,10 +4,14 @@
   lib,
   config,
   nixDirectory ? "~/nix-conf",
-  enableLunarTools ? false,  # Accept the parameter
+  user ? "edb",  # ← Added missing comma
   ...
 }:
 
+let
+  # Derive lunar tools from user
+  enableLunarTools = user == "edb";
+in
 {
   options = {
     core-zsh.enable = lib.mkEnableOption "enables core zsh tooling";
@@ -36,7 +40,6 @@
           file = "share/zsh-defer/zsh-defer.zsh";
         }
       ] ++ lib.optionals enableLunarTools [
-        # Only add lunar plugin if lunar tools are enabled
         {
           name = "lunar";
           src = "${pkgs.lunar-zsh-plugin}/share/zsh/plugins/lunar-zsh-plugin/";
@@ -49,7 +52,7 @@
         ls = "eza -all --icons";
         lg = "lazygit";
         nu = "pushd ${nixDirectory} && nix flake update && popd";
-        ns = "pushd ${nixDirectory} && sudo darwin-rebuild --flake .#aarch64-darwin && popd";
+        ns = "pushd ${nixDirectory} && sudo darwin-rebuild switch --flake .#aarch64-darwin && popd";  # ← Fixed command
         gn = "gitnow";
         "docker-compose" = "docker compose";
       } // lib.optionalAttrs enableLunarTools {
@@ -80,15 +83,17 @@
 
             # k8s plugin manager
             [[ -f $(which krew) ]] || export PATH="$HOME/.krew/bin:$PATH"
-
+            
+            ${lib.optionalString enableLunarTools ''
             # shuttle
             [[ ! -f $(which shuttle) ]] || source <(shuttle completion zsh)
 
-            # hamctl
-            [[ ! -f $(which hamctl) ]] || source <(hamctl completion zsh)
-
             # gitnow 
             [[ ! -f $(which gitnow) ]] || source <(gitnow init zsh)
+
+            # hamctl
+            [[ ! -f $(which hamctl) ]] || source <(hamctl completion zsh)
+            ''}
 
             # starship
             [[ ! -f $(which starship) ]] || source <(starship init zsh)

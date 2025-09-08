@@ -5,7 +5,6 @@
   nixfiles,
   nixDirectory,
   enableHomebrew,
-  enableLunarTools,
   gitConfig,
   ...
 }:
@@ -36,7 +35,7 @@
       inherit nixfiles;
       inherit nixDirectory;
       inherit enableHomebrew;
-      inherit enableLunarTools;
+      inherit user;
       inherit gitConfig;
     };
   };

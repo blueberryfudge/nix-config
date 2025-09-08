@@ -14,11 +14,13 @@
     };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     flake-utils.url = "github:numtide/flake-utils";
+    helix.url = "github:helix-editor/helix";
+
     lunar-tools = {
       url = "git+ssh://git@github.com/lunarway/lw-nix?ref=feat/zsh-plugin";
     };
-    helix.url = "github:helix-editor/helix";
   };
+  
   outputs =
     inputs@{
       self,
@@ -28,14 +30,14 @@
       home-manager,
       nix-homebrew,
       flake-utils,
-      lunar-tools,
       helix,
+      lunar-tools,
       ...
     }:
     let
       overlays = [
-        lunar-tools.overlays.default
         helix.overlays.default
+        lunar-tools.overlays.default
       ];
       
       nixfiles = ./.;
@@ -47,7 +49,6 @@
           homeModule = ./hosts/work/home.nix;
           hostModule = ./hosts/work;
           enableHomebrew = false;
-          enableLunarTools = true;
 
         gitConfig = {
           userName = "Edvard Boguslavskij";
@@ -55,7 +56,6 @@
           signingKey = "/Users/edb/.ssh/github.pub";
           workSSHKey = "/Users/edb/.ssh/github";
           personalSSHKey = "/Users/edb/.ssh/id_ed25519";
-          enableLunarUrls = true;
           enablePersonalAlias = true;
           user = "edb";
           };
@@ -68,7 +68,6 @@
           homeModule = ./hosts/personal/home.nix;
           hostModule = ./hosts/personal;
           enableHomebrew = false;
-          enableLunarTools = false;
 
         gitConfig = {
           userName = "x";
@@ -81,8 +80,7 @@
           user = "x";
         };
       };
-
-      };
+    };
       mkDarwinSystem =
         hostname: config:
         darwin.lib.darwinSystem {
@@ -103,7 +101,6 @@
               homeModule = config.homeModule;
               inputs = inputs;
               enableHomebrew = config.enableHomebrew;
-              enableLunarTools = config.enableLunarTools;
               gitConfig = config.gitConfig;
             })
           ];
