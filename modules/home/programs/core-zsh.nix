@@ -56,7 +56,7 @@
         lg = "lazygit";
         nu = "pushd ${nixDirectory} && nix flake update && popd";
         ns = "pushd ${nixDirectory} && sudo darwin-rebuild --flake .#aarch64-darwin && popd";
-        gn = "gitnow";
+        gn = "${pkgs.gitnow}/bin/gitnow-wrapper";
         awsenv = "aws_fzf_profile";
         k8senv = "kubectl config use-context $(kubectl config get-contexts --no-headers | sed 's/^*//g' | awk '{print $1}' | fzf --prompt \"Choose k8s context: \")";
         "docker-compose" = "docker compose";

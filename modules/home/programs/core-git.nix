@@ -18,8 +18,8 @@ in
     home.packages = with pkgs; [
       gh
       # NOTE: realistically only need one of the below
-      inputs.lunar-tools.packages.${pkgs.system}.gitnow
-      inputs.lunar-tools.packages.${pkgs.system}.sesh
+      gitnow
+      sesh
     ];
 
     programs.git = {

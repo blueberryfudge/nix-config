@@ -12,7 +12,6 @@
     neofetch
     nerd-fonts.fira-code
     nerd-fonts.fira-mono
-    gitnow
   ];
 
   home.sessionVariables = { };
