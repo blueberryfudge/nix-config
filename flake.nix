@@ -17,6 +17,7 @@
     lunar-tools = {
       url = "git+ssh://git@github.com/lunarway/lw-nix?ref=feat/zsh-plugin";
     };
+    helix.url = "github:helix-editor/helix";
   };
   outputs =
     inputs@{
@@ -28,9 +29,15 @@
       nix-homebrew,
       flake-utils,
       lunar-tools,
+      helix,
       ...
     }:
     let
+      overlays = [
+        lunar-tools.overlays.default
+        helix.overlays.default
+      ];
+      
       nixfiles = ./.;
       systemConfigs = {
         "work-mac" = {
@@ -63,6 +70,7 @@
             user = config.user;
           };
           modules = [
+            { nixpkgs.overlays = overlays; }
             home-manager.darwinModules.home-manager
             #nix-homebrew.darwinModules.nix-homebrew
             config.hostModule

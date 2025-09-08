@@ -15,7 +15,6 @@
   config = lib.mkIf config.core-zsh.enable {
     home.packages = [
       pkgs.starship
-      pkgs.helix
       pkgs.lazygit
       pkgs.yazi
       pkgs.zellij

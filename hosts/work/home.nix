@@ -12,6 +12,7 @@
     neofetch
     nerd-fonts.fira-code
     nerd-fonts.fira-mono
+    gitnow
   ];
 
   home.sessionVariables = { };
@@ -19,6 +20,7 @@
   ## this are required and shouldn't be disabled
   core-zsh.enable = true;
   core-git.enable = true;
+  editor.enable = true;
 
   # optional modules
   cli-tooling.enable = true;
