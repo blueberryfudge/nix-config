@@ -6,6 +6,7 @@
   nixDirectory,
   enableHomebrew,
   enableLunarTools,
+  gitConfig,
   ...
 }:
 
@@ -36,6 +37,7 @@
       inherit nixDirectory;
       inherit enableHomebrew;
       inherit enableLunarTools;
+      inherit gitConfig;
     };
   };
 }

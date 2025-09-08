@@ -48,17 +48,39 @@
           hostModule = ./hosts/work;
           enableHomebrew = false;
           enableLunarTools = false;
+
+        gitConfig = {
+          userName = "Edvard Boguslavskij";
+          userEmail = "edb@lunar.app";
+          signingKey = "/Users/edb/.ssh/github.pub";
+          workSSHKey = "/Users/edb/.ssh/github";
+          personalSSHKey = "/Users/edb/.ssh/id_ed25519";
+          enableLunarUrls = true;
+          enablePersonalAlias = true;
+          user = "edb";
+          };
         };
 
-        # "personal-mac" = {
-        #   system = "aarch64-darwin";
-        #   user = "erik";
-        #   nixDirectory = "~/.config/nix-config";
-        #   hostModule = ./nix/modules/home-personal.nix;
-        #   machineConfig = ./machines/personal-mac.nix;
-        #   enableHomebrew = false;
-        #   enableLunarTools = false;
-        # };
+        "personal-mac" = {
+          system = "aarch64-darwin";
+          user = "x";
+          nixDirectory = "~/.config/nix-config";
+          homeModule = ./hosts/personal/home.nix;
+          hostModule = ./hosts/personal;
+          enableHomebrew = false;
+          enableLunarTools = false;
+
+        gitConfig = {
+          userName = "x";
+          userEmail = "edvard.bgs@gmail.com";
+          signingKey = "/Users/x/.ssh/id_ed25519";
+          workSSHKey = null;
+          personalSSHKey = "/Users/x/.ssh/id_ed25519";
+          enableLunarUrls = false;
+          enablePersonalAlias = false;
+          user = "x";
+        };
+      };
 
       };
       mkDarwinSystem =
@@ -82,6 +104,7 @@
               inputs = inputs;
               enableHomebrew = config.enableHomebrew;
               enableLunarTools = config.enableLunarTools;
+              gitConfig = config.gitConfig;
             })
           ];
         };

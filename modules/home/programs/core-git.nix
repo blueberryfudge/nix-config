@@ -3,11 +3,22 @@
   pkgs,
   lib,
   config,
+  gitConfig ? {},
   ...
 }:
 
 let
-  defaultSigned = true;
+  defaultSigned = gitConfig.enableSigning or true;
+  cfg = {
+    userName = gitConfig.userName or "Edvard Boguslavskij";
+    userEmail = gitConfig.userEmail or "edvard.bgs@gmail.com";
+    signingKey = gitConfig.signingKey or "/Users/${gitConfig.user or "edb"}/.ssh/id_ed25519";
+    workSSHKey = gitConfig.workSSHKey or null;
+    personalSSHKey = gitConfig.personalSSHKey or "/Users/${gitConfig.user or "edb"}/.ssh/id_ed25519";
+    enableLunarUrls = gitConfig.enableLunarUrls or false;
+    enablePersonalAlias = gitConfig.enablePersonalAlias or false;
+    user = gitConfig.user or "edb";
+  };
 in
 {
   options = {
@@ -34,11 +45,11 @@ in
         "*.log"
       ];
 
-      userName = "Edvard Boguslavskij";
-      userEmail = "edb@lunar.app";
+      userName = cfg.userName;
+      userEmail = cfg.userEmail;
 
       signing = {
-        key = "/Users/edb/.ssh/github.pub";
+        key = cfg.signingKey;
         signByDefault = defaultSigned;
       };
 
@@ -57,19 +68,22 @@ in
         rebase.autoStash = true;
         branch.sort = "-committerdate";
 
-        url."git@github.com:lunarway/" = {
+        url."git@github.com:lunarway/" = lib.mkIf cfg.enableLunarUrls {
           insteadOf = "https://github.com/lunarway/";
         };
 
         # NOTE: this is an example config for reference
-        includeIf."gitdir/i:/Users/edb/git/github.com/blueberryfudge/" = {
+        includeIf."gitdir/i:/Users/${cfg.user}/git/github.com/blueberryfudge/" = lib.mkIf cfg.enablePersonalAlias {
+            path = "~/.gitconfig_personal";
+        };
+        includeIf."gitdir/i:/Users/edb/.local/share/chezmoi/" = lib.mkIf cfg.enablePersonalAlias {
           path = "~/.gitconfig_personal";
         };
-        includeIf."gitdir/i:/Users/edb/.local/share/chezmoi/" = {
+        includeIf."gitdir/i:/Users/edb/.config/nix-config/" = lib.mkIf cfg.enablePersonalAlias {
           path = "~/.gitconfig_personal";
         };
-        includeIf."gitdir/i:/Users/edb/.config/nix-config/" = {
-          path = "~/.gitconfig_personal";
+        url."git@github.com" = lib.mkIf (!cfg.enableLunarUrls) {
+          insteadOf = "https://github.com";
         };
       };
 
@@ -80,12 +94,12 @@ in
     };
 
     # NOTE: this is an example config for reference
-    home.file.".gitconfig_personal" = {
+    home.file.".gitconfig_personal" = lib.mkIf cfg.enablePersonalAlias {
       text = ''
         [user]
-          name = Edvard Boguslavskij
+          name = ${cfg.userName}
           email = edvard.bgs@gmail.com
-          signingkey = /Users/edb/.ssh/id_ed25519
+          signingkey = ${cfg.personalSSHKey}
 
         [gpg]
           format = ssh
@@ -114,17 +128,17 @@ in
       matchBlocks = {
         "github.com" = {
           user = "git";
-          identityFile = "/Users/edb/.ssh/github";
+          identityFile = if cfg.workSSHKey != null then cfg.workSSHKey else cfg.personalSSHKey;
           addKeysToAgent = "yes";
-          #useKeychain = true;
         };
+      } // lib.optionalAttrs cfg.enablePersonalAlias {
         "github-blueberryfudge" = {
           hostname = "github.com";
           user = "git";
-          identityFile = "/Users/edb/.ssh/id_ed25519";
+          identityFile = cfg.personalSSHKey;
           addKeysToAgent = "yes";
-          #useKeychain = true;
         };
+      } // {
         "*" = {
           identitiesOnly = true;
           addKeysToAgent = "yes";
