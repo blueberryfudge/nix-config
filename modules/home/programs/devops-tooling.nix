@@ -22,9 +22,9 @@
       kubernetes-helm
       fluxcd
       tenv
-      inputs.lunar-tools.packages.${pkgs.system}.hamctl
-      inputs.lunar-tools.packages.${pkgs.system}.shuttle
-      # inputs.lunar-tools.packages.${pkgs.system}.dagger
+      pkgs.hamctl
+      pkgs.shuttle
+      # pkgs.dagger
     ];
   };
 }

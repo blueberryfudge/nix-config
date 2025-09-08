@@ -31,7 +31,7 @@
       devenv
 
       # lunar tooling
-      inputs.lunar-tools.packages.${pkgs.system}.hubble
+      pkgs.hubble
     ];
   };
 }
