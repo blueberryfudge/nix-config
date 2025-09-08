@@ -4,6 +4,7 @@
   lib,
   config,
   nixDirectory ? "~/nix-conf",
+  enableLunarTools ? false,  # Accept the parameter
   ...
 }:
 
@@ -20,28 +21,22 @@
       pkgs.zellij
       pkgs.eza
     ];
+    
     programs.zsh = {
       enable = true;
       autocd = true;
       enableCompletion = true;
       autosuggestion.enable = true;
       syntaxHighlighting.enable = true;
-      # defaultKeymap = "viins";
-
-      # NOTE: use-this for debugging performance issues
-      #zprof.enable = true;
 
       plugins = [
-        # {
-        #   name = "powerlevel10k";
-        #   src = pkgs.zsh-powerlevel10k;
-        #   file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-        # }
         {
           name = "zshdefer";
           src = pkgs.zsh-defer;
           file = "share/zsh-defer/zsh-defer.zsh";
         }
+      ] ++ lib.optionals enableLunarTools [
+        # Only add lunar plugin if lunar tools are enabled
         {
           name = "lunar";
           src = "${pkgs.lunar-zsh-plugin}/share/zsh/plugins/lunar-zsh-plugin/";
@@ -50,14 +45,17 @@
       ];
 
       shellAliases = {
+        # Base aliases (always available)
         ls = "eza -all --icons";
         lg = "lazygit";
         nu = "pushd ${nixDirectory} && nix flake update && popd";
         ns = "pushd ${nixDirectory} && sudo darwin-rebuild --flake .#aarch64-darwin && popd";
         gn = "gitnow";
+        "docker-compose" = "docker compose";
+      } // lib.optionalAttrs enableLunarTools {
+        # Lunar-specific aliases (only if enabled)
         awsenv = "aws_fzf_profile";
         k8senv = "k8s_fzf_context";
-        "docker-compose" = "docker compose";
         hubble = "aws_wrapper hubble";
         k9s = "k8s_wrapper k9s";
         helm = "k8s_wrapper helm";
@@ -67,7 +65,6 @@
       history.size = 10000;
       history.path = "${config.xdg.dataHome}/zsh/history";
 
-      # NOTE: 500: early init, 550: before comp, 1000: general, 1500: last
       initContent =
         let
           zshConfigEarlyInit = lib.mkOrder 500 ''
@@ -80,16 +77,9 @@
               . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
               . /nix/var/nix/profiles/default/etc/profile.d/nix.sh
             fi
-            # TODO: need to use enableHomebrew flag
-            # if [[ $(uname -m) == 'arm64' ]]; then
-            #     eval "$(/opt/homebrew/bin/brew shellenv)"
-            # fi
 
             # k8s plugin manager
             [[ -f $(which krew) ]] || export PATH="$HOME/.krew/bin:$PATH"
-
-            # powerlevel10k
-            #[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
             # shuttle
             [[ ! -f $(which shuttle) ]] || source <(shuttle completion zsh)
@@ -117,16 +107,13 @@
             fi
 
             export PATH="$HOME/.local/bin:$PATH"
-            export LUNARCTL_REGISTRY="git=git@github.com:lunarway/lunarctl-registry.git"
             export EDITOR='hx'
             export MANPAGER='hx +Man!'
 
-            # LW_PATH=~/lunar
-            # GOPATH=~/go
-            # GOBIN="$GOPATH/bin"
-            # PATH="$PATH:/Users/edvard/.cargo/bin"
-            # PATH="$GOBIN:$PATH"
-            # export PATH=$PATH:/usr/local/go/bin
+            ${lib.optionalString enableLunarTools ''
+            # Lunar-specific environment variables
+            export LUNARCTL_REGISTRY="git=git@github.com:lunarway/lunarctl-registry.git"
+            ''}
           '';
         in
         lib.mkMerge [
@@ -145,7 +132,8 @@
       enableZshIntegration = true;
     };
 
-    #home.file.".p10k.zsh".source = "${nixfiles}/nix/config/zsh/p10k.zsh";
+    # Only create lunar config files if lunar tools are enabled
+  } // lib.optionalAttrs enableLunarTools {
     home.file.".aws/config".source = "${pkgs.lunar-zsh-plugin}/.aws/config";
     home.file.".kube/config".source = "${pkgs.lunar-zsh-plugin}/.kube/config";
   };

@@ -47,7 +47,7 @@
           homeModule = ./hosts/work/home.nix;
           hostModule = ./hosts/work;
           enableHomebrew = false;
-          enableLunarTools = false;
+          enableLunarTools = true;
 
         gitConfig = {
           userName = "Edvard Boguslavskij";
