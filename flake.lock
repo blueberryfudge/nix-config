@@ -394,11 +394,11 @@
         "shuttle": "shuttle"
       },
       "locked": {
-        "lastModified": 1757177124,
-        "narHash": "sha256-Rk89o0KhUk8GvftsGpWHwIS2ZYKz+CLbKDT4HMLOCO8=",
+        "lastModified": 1757323147,
+        "narHash": "sha256-uHbQQ+ws7W73hZ5G2ZbxUuYGNOX6BYLu8WEHKnZXJJA=",
         "ref": "feat/zsh-plugin",
-        "rev": "3745ebe8e49b22c3af39885e207abd61a82a5571",
-        "revCount": 30,
+        "rev": "0fc59036c92e618e24cc276627c5c6fe84217060",
+        "revCount": 31,
         "type": "git",
         "url": "ssh://git@github.com/lunarway/lw-nix"
       },
@@ -496,11 +496,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1757316883,
-        "narHash": "sha256-p8gLDGaP79E6eKeY6B4HgWAC8tpo7XCf/bxUhj52heU=",
+        "lastModified": 1757322753,
+        "narHash": "sha256-ikSR+seQjnDIylzl8EgLOXHjWVnBQieS0yKJXsb3mWU=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "b4698a0f2927db435cba663cb0a2c8b1d764b1d1",
+        "rev": "84607fd8efabe45b1fe1fcc3f8e4316238b663f4",
         "type": "github"
       },
       "original": {
