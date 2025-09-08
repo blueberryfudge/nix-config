@@ -1,7 +1,7 @@
 { pkgs, ... }: {
   imports = [ 
-    ../modules/base.nix 
-    ../modules/homebrew.nix 
+    ../../modules/darwin 
+    ../../modules/shared 
   ];
 
   system.primaryUser = "x";
