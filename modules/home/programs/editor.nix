@@ -19,6 +19,13 @@
     home.packages = with pkgs; [
       metals
       helix
+      nil
+      rust-analyzer
+      ruff-lsp
+      marksman
+      yaml-language-server
+      goimports
+      prettier
     ];
 
     home.file.".config/helix/config.toml".text = ''
