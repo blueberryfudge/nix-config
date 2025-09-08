@@ -394,11 +394,11 @@
         "shuttle": "shuttle"
       },
       "locked": {
-        "lastModified": 1757329223,
-        "narHash": "sha256-sLTPgXSIoLGw0NGbledmqV/L+OrtdpnqMUChfszvnok=",
+        "lastModified": 1757330691,
+        "narHash": "sha256-rE0LB6rRo/JQEfBC58sMOwualZJmhaKj0oFiXPD08FM=",
         "ref": "feat/zsh-plugin",
-        "rev": "1151ea4efc763ae942f380d858dfceae90327637",
-        "revCount": 32,
+        "rev": "b20e9cff5227342fc3ab1c4535ce69fda32398f4",
+        "revCount": 33,
         "type": "git",
         "url": "ssh://git@github.com/lunarway/lw-nix"
       },

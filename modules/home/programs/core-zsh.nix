@@ -54,7 +54,7 @@
         lg = "lazygit";
         nu = "pushd ${nixDirectory} && nix flake update && popd";
         ns = "pushd ${nixDirectory} && sudo darwin-rebuild --flake .#aarch64-darwin && popd";
-        gn = "${pkgs.gitnow}/bin/gitnow-wrapper";
+        gn = "gitnow";
         awsenv = "aws_fzf_profile";
         k8senv = "k8s_fzf_context";
         "docker-compose" = "docker compose";
