@@ -20,7 +20,7 @@
       url = "git+ssh://git@github.com/lunarway/lw-nix?ref=feat/zsh-plugin";
     };
   };
-  
+
   outputs =
     inputs@{
       self,
@@ -39,7 +39,7 @@
         helix.overlays.default
         lunar-tools.overlays.default
       ];
-      
+
       nixfiles = ./.;
       systemConfigs = {
         "work-mac" = {
@@ -50,14 +50,14 @@
           hostModule = ./hosts/work;
           enableHomebrew = false;
 
-        gitConfig = {
-          userName = "Edvard Boguslavskij";
-          userEmail = "edb@lunar.app";
-          signingKey = "/Users/edb/.ssh/github.pub";
-          workSSHKey = "/Users/edb/.ssh/github";
-          personalSSHKey = "/Users/edb/.ssh/id_ed25519";
-          enablePersonalAlias = true;
-          user = "edb";
+          gitConfig = {
+            userName = "Edvard Boguslavskij";
+            userEmail = "edb@lunar.app";
+            signingKey = "/Users/edb/.ssh/github.pub";
+            workSSHKey = "/Users/edb/.ssh/github";
+            personalSSHKey = "/Users/edb/.ssh/id_ed25519";
+            enablePersonalAlias = true;
+            user = "edb";
           };
         };
 
@@ -69,18 +69,18 @@
           hostModule = ./hosts/personal;
           enableHomebrew = false;
 
-        gitConfig = {
-          userName = "x";
-          userEmail = "edvard.bgs@gmail.com";
-          signingKey = "/Users/x/.ssh/id_ed25519";
-          workSSHKey = null;
-          personalSSHKey = "/Users/x/.ssh/id_ed25519";
-          enableLunarUrls = false;
-          enablePersonalAlias = false;
-          user = "x";
+          gitConfig = {
+            userName = "x";
+            userEmail = "edvard.bgs@gmail.com";
+            signingKey = "/Users/x/.ssh/id_ed25519";
+            workSSHKey = null;
+            personalSSHKey = "/Users/x/.ssh/id_ed25519";
+            enableLunarUrls = false;
+            enablePersonalAlias = false;
+            user = "x";
+          };
         };
       };
-    };
       mkDarwinSystem =
         hostname: config:
         darwin.lib.darwinSystem {

@@ -3,9 +3,14 @@
   pkgs,
   lib,
   config,
+  user ? "edb", 
   ...
 }:
 
+let
+  enableLunarTools = user == "edb";
+
+in
 {
   options = {
     devops-tooling.enable = lib.mkEnableOption "enables devops tooling (docker, k8s, dagger)";
@@ -21,7 +26,7 @@
       krew
       kubernetes-helm
       fluxcd
-      tenv
+      tenv] ++ lib.optionals enableLunarTools [
       pkgs.hamctl
       pkgs.shuttle
       # pkgs.dagger

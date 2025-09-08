@@ -4,10 +4,12 @@
   lib,
   config,
   gitConfig ? {},
+  user ? "edb",
   ...
 }:
 
 let
+  enableLunarTools = user == "edb";
   defaultSigned = gitConfig.enableSigning or true;
   cfg = {
     userName = gitConfig.userName or "Edvard Boguslavskij";
@@ -27,7 +29,7 @@ in
 
   config = lib.mkIf config.core-git.enable {
     home.packages = with pkgs; [
-      gh
+      gh ] ++ lib.optionals enableLunarTools [
       # NOTE: realistically only need one of the below
       gitnow
       sesh
