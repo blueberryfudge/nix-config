@@ -4,7 +4,7 @@
   inputs,
   nixfiles,
   nixDirectory,
-  enableHomebrew ? false,
+  enableHomebrew ? true,
   gitConfig,
   ...
 }:

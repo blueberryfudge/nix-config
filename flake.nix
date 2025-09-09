@@ -37,7 +37,7 @@
           extraOverlays ? [],
           gitConfig ? {},
           nixDirectory ? "~/.config/nix-config",
-          enableHomeBrew ? false
+          enableHomeBrew ? true
         }:
         let
           overlays = [
