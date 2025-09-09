@@ -67,6 +67,7 @@
         user = "x";
         homeModule = ./hosts/personal/home.nix;
         hostModule = ./hosts/personal;
+        enableHomeBrew = true;
         gitConfig = {
           userName = "x";
           userEmail = "edvard.bgs@gmail.com";

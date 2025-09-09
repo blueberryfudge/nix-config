@@ -22,8 +22,8 @@
   editor.enable = true;
 
   # optional modules
-  # cli-tooling.enable = true;
-  # devops-tooling.enable = true;
+  cli-tooling.enable = true;
+  devops-tooling.enable = true;
   # matrix-tooling.enable = true;
   # lang-tooling.enable = true;
 }

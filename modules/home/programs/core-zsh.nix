@@ -4,7 +4,7 @@
   lib,
   config,
   nixDirectory ? "~/nix-conf",
-  user ? "edb",  # ← Added missing comma
+  user ? "edb",
   ...
 }:
 
