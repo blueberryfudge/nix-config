@@ -17,6 +17,7 @@
       user = "edb";
       homeModule = ../hosts/work/home.nix;
       hostModule = ../hosts/work;
+      enableHomeBrew = false;
       extraOverlays = [ lunar-tools.overlays.default];
       gitConfig = {
         userName = "Edvard Boguslavskij";

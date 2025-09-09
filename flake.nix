@@ -56,7 +56,8 @@
             home-manager.darwinModules.home-manager
             hostModule
             (import ./modules/shared/homemanager.nix {
-              inherit nixfiles user nixDirectory homeModule inputs enableHomeBrew gitConfig;
+              inherit nixfiles user nixDirectory homeModule inputs gitConfig;
+              enableHomeBrew = enableHomeBrew;
             })
           ];
         };
