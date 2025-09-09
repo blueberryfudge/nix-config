@@ -14,6 +14,7 @@
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     flake-utils.url = "github:numtide/flake-utils";
     helix.url = "github:helix-editor/helix";
+    ghostty.url = "github:ghostty-org/ghostty";
   };
 
   outputs =
@@ -25,6 +26,7 @@
       nix-homebrew,
       flake-utils,
       helix,
+      ghostty,
       ...
     }:
     {
@@ -42,6 +44,7 @@
         let
           overlays = [
             helix.overlays.default
+            ghostty.overlays.default
           ] ++ extraOverlays;
 
           nixfiles = ./.;
