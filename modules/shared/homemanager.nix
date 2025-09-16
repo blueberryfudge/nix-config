@@ -4,7 +4,6 @@
   inputs,
   nixfiles,
   nixDirectory,
-  enableHomebrew ? true,
   gitConfig,
   ...
 }:
@@ -34,7 +33,6 @@
       inherit inputs;
       inherit nixfiles;
       inherit nixDirectory;
-      inherit enableHomebrew;
       inherit user;
       inherit gitConfig;
     };

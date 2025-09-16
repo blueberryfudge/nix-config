@@ -1,15 +1,20 @@
 {
   user,
   pkgs,
-  enableHomebrew,
+  hostModule,
   ...
 }:
+let
+  # casksPath = "${hostModule}/casks.nix";
+  casksPath = "/Users/edb/.config/nix-config/hosts/work/casks.nix";
+  brewsPath = "${hostModule}/brews.nix";
 
+  in
 {
   nix-homebrew = {
     inherit user;
-    enable = enableHomebrew;
-    enableRosetta = enableHomebrew;
+    enable = true;
+    enableRosetta = true;
     mutableTaps = true;
 
 
@@ -35,7 +40,7 @@
   };
 
   homebrew = {
-    enable = enableHomebrew;
+    enable = true;
 
     global = {
       brewfile = true;
@@ -43,7 +48,7 @@
     };
 
     brewPrefix = "/opt/homebrew/bin"; # needed for arm64
-    casks = pkgs.callPackage ./casks.nix { };
+    casks = pkgs.callPackage casksPath { };
 
     onActivation = {
       autoUpdate = true;
@@ -52,7 +57,7 @@
     };
 
     
-    brews= pkgs.callPackage ./brews.nix { };
+    brews= pkgs.callPackage brewsPath { };
 
     # mas = mac app store
     # https://github.com/mas-cli/mas

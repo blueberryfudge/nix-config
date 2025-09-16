@@ -39,7 +39,6 @@
           extraOverlays ? [],
           gitConfig ? {},
           nixDirectory ? "~/.config/nix-config",
-          enableHomeBrew ? true
         }:
         let
           overlays = [
@@ -57,10 +56,10 @@
           modules = [
             {nixpkgs.overlays = overlays; }
             home-manager.darwinModules.home-manager
+            nix-homebrew.darwinModules.nix-homebrew
             hostModule
             (import ./modules/shared/homemanager.nix {
               inherit nixfiles user nixDirectory homeModule inputs gitConfig;
-              enableHomeBrew = enableHomeBrew;
             })
           ];
         };
@@ -70,7 +69,6 @@
         user = "x";
         homeModule = ./hosts/personal/home.nix;
         hostModule = ./hosts/personal;
-        enableHomeBrew = true;
         gitConfig = {
           userName = "x";
           userEmail = "edvard.bgs@gmail.com";

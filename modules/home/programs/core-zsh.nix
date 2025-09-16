@@ -83,6 +83,10 @@ in
               . /nix/var/nix/profiles/default/etc/profile.d/nix.sh
             fi
 
+            if [[ $(uname -m) == 'arm64' ]]; then
+                eval "$(/opt/homebrew/bin/brew shellenv)"
+            fi
+
             # k8s plugin manager
             [[ -f $(which krew) ]] || export PATH="$HOME/.krew/bin:$PATH"
             
