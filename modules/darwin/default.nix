@@ -17,7 +17,7 @@ let
     in
     builtins.length relPathParts > 1;
 
-  filtered = builtins.filter (f: !(builtins.elem (toString f) excluded) && isSubdir f) nixFiles;
+   filtered = builtins.filter (f: !(builtins.elem (toString f) excluded)) nixFiles;
 in
 {
   imports = map import filtered;

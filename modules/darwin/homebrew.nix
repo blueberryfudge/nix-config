@@ -5,8 +5,7 @@
   ...
 }:
 let
-  # casksPath = "${hostModule}/casks.nix";
-  casksPath = "/Users/edb/.config/nix-config/hosts/work/casks.nix";
+  casksPath = "${hostModule}/casks.nix";
   brewsPath = "${hostModule}/brews.nix";
 
   in
@@ -16,6 +15,7 @@ let
     enable = true;
     enableRosetta = true;
     mutableTaps = true;
+    autoMigrate = true;
 
 
     # Note: if we want nix managed taps

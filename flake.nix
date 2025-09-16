@@ -39,6 +39,7 @@
           extraOverlays ? [],
           gitConfig ? {},
           nixDirectory ? "~/.config/nix-config",
+          enableHomeBrew ? false,
         }:
         let
           overlays = [
@@ -52,6 +53,7 @@
           inherit system;
           specialArgs = {
             inherit inputs nixfiles user;
+            inherit hostModule;
           };
           modules = [
             {nixpkgs.overlays = overlays; }
@@ -69,6 +71,7 @@
         user = "x";
         homeModule = ./hosts/personal/home.nix;
         hostModule = ./hosts/personal;
+        enableHomeBrew = true;
         gitConfig = {
           userName = "x";
           userEmail = "edvard.bgs@gmail.com";
