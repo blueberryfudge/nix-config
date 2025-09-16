@@ -24,6 +24,8 @@ in
       pkgs.yazi
       pkgs.zellij
       pkgs.eza
+      pkgs.bat
+      pkgs.wget
     ];
     
     programs.zsh = {
