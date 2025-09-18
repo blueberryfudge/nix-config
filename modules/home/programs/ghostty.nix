@@ -18,6 +18,11 @@
       default = 15;
       description = "ghostty font size";
     };
+    ghostty.fontFamily = lib.mkOption {
+      type = lib.types.int;
+      default = "FiraCode Nerd Font";
+      description = "ghostty font family";
+    };
     ghostty.windowWidth = lib.mkOption {
       type = lib.types.int;
       default = 120;
@@ -50,6 +55,7 @@
       window-save-state = always
 
       font-size = ${toString config.ghostty.fontSize}
+      font-family = ${toString config.ghostty.fontFamily}
     '';
   
     home.file.".config/ghostty/themes/catppuccin-mocha".text = ''
