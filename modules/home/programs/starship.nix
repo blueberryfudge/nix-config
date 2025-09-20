@@ -58,9 +58,9 @@
             renamed = "[»\($count\)](bg:surface0 fg:mauve)";
             deleted = "[✘\($count\)](style)";
             staged = "[++\($count\)](bg:surface0 fg:rosewater)";
-            ahead = "[⇡\($count\)](bg:surface0 fg:lavender)";
+            ahead = "[⇡\ ($count\)](bg:surface0 fg:lavender)";
             diverged = "⇕[\[](bg:surface0 fg:mauve)[⇡\($ahead_count\)](bg:surface0 fg:lavender)[⇣\($behind_count\)](bg:surface0 fg:pink)[\]](bg:surface0 fg:mauve)";
-            behind = "[⇣\($count\)](bg:surface0 fg:pink)";
+            behind = "[⇣\ ($count\)](bg:surface0 fg:pink)";
         };
 
         c = {
