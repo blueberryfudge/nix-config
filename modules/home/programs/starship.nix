@@ -22,8 +22,7 @@
 
         command_timeout = 1000;
 
-        format = ''$directory$git_branch$git_status$fill$time
-          $line_break$character'';
+        format = "$directory$git_branch$git_status$fill$time$line_break$username$character";
         right_format = "$c$rust$golang$nix_shell$java$kotlin$python$scala";
         palette = "catppuccin_mocha";
 
@@ -37,7 +36,7 @@
           show_always = true;
           style_user = "bg:surface0 fg:surface2";
           style_root = "bg:surface0 fg:surface2";
-          format = "[$user]($style)";
+          format = "[](fg:surface0)[$user](fg:black bg:surface0)[](fg:surface0) ";
         };
 
         directory = {
@@ -49,7 +48,7 @@
 
         git_branch = {
           format = "[](fg:sapphire)[$symbol](fg:black bg:sapphire)[](fg:sapphire bg:surface0)[ $branch](fg:white bg:surface0)[](fg:surface0) ";
-          symbol = " "
+          symbol = " "
 ;
         };
 
