@@ -22,9 +22,15 @@
 
         command_timeout = 1000;
 
-        format = "$directory$git_branch$git_status$cmd_duration$line_break$character";
+        format = ''$directory$git_branch$git_status$fill$time
+          $line_break$character'';
         right_format = "$c$rust$golang$nix_shell$java$kotlin$python$scala";
         palette = "catppuccin_mocha";
+
+        fill = {
+          style = "fg:base";
+          symbol = " ";
+        };
 
         username = {
           disabled = true;
@@ -52,15 +58,15 @@
           style = "bg:yellow";
           format = "[](fg:sapphire)[ ](fg:black bg:sapphire)[](fg:sapphire bg:surface0)[ ($all_status$ahead_behind)](fg:white bg:surface0)[](fg:surface0)";
             up_to_date = "[ ✓ ](bg:surface0 fg:mauve)";
-            untracked = "[?\($count\)](bg:surface0 fg:rosewater)";
-            stashed = "[\$](bg:surface0 fg:mauve)";
-            modified = "[!\($count\)](bg:surface0 fg:rosewater";
-            renamed = "[»\($count\)](bg:surface0 fg:mauve)";
-            deleted = "[✘\($count\)](style)";
-            staged = "[++\($count\)](bg:surface0 fg:rosewater)";
-            ahead = "[⇡\ ($count\)](bg:surface0 fg:lavender)";
-            diverged = "⇕[\[](bg:surface0 fg:mauve)[⇡\($ahead_count\)](bg:surface0 fg:lavender)[⇣\($behind_count\)](bg:surface0 fg:pink)[\]](bg:surface0 fg:mauve)";
-            behind = "[⇣\ ($count\)](bg:surface0 fg:pink)";
+            untracked = "[? ($count)](bg:surface0 fg:rosewater)";
+            stashed = "[ $](bg:surface0 fg:mauve)";
+            modified = "[! ($count)](bg:surface0 fg:rosewater)";
+            renamed = "[» ($count)](bg:surface0 fg:mauve)";
+            deleted = "[✘ ($count)](style)";
+            staged = "[++ ($count)](bg:surface0 fg:rosewater)";
+            ahead = "[⇡ ($count)](bg:surface0 fg:lavender)";
+            diverged = "⇕[\[](bg:surface0 fg:mauve)[⇡($ahead_count)](bg:surface0 fg:lavender)[⇣($behind_count)](bg:surface0 fg:pink)[\]](bg:surface0 fg:mauve)";
+            behind = "[⇣ ($count)](bg:surface0 fg:pink)";
         };
 
         c = {
@@ -118,10 +124,12 @@
         };
 
         time = {
-          disabled = true;
+          disabled = false;
           time_format = "%R";
           style = "bg:lavender";
-          format = "[[  $time ](fg:crust bg:lavender)]($style)";
+          #format = "[[  $time ](fg:crust bg:lavender)]($style)";
+          format = "[](fg:mauve)[ ](fg:black bg:mauve)[](fg:mauve bg:surface0)[ $time](fg:white bg:surface0)[](fg:surface0) ";
+
         };
 
         line_break = {
