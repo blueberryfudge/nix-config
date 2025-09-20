@@ -37,8 +37,8 @@
         directory = {
           style = "bg:sky fg:crust";
           format = "[](fg:yellow)[󰀵 ](fg:black bg:yellow)[](fg:yellow bg:surface0)[ $path](fg:white bg:surface0)[](fg:surface0) ";
-          truncation_length = 3;
-          truncation_symbol = "…/";
+          # truncation_length = 3;
+          # truncation_symbol = "…/";
         };
 
         git_branch = {
