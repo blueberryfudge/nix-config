@@ -48,8 +48,19 @@
         };
 
         git_status = {
+          disabled = false;
           style = "bg:yellow";
-          format = "[](fg:sapphire)[󰊢 ](fg:black bg:sapphire)[](fg:sapphire bg:surface0)[ ($all_status$ahead_behind)](fg:white bg:surface0)[](fg:surface0)";
+          format = "[](fg:sapphire)[ ](fg:black bg:sapphire)[](fg:sapphire bg:surface0)[ ($all_status$ahead_behind)](fg:white bg:surface0)[](fg:surface0)";
+            up_to_date = "[ ✓ ](bg:surface0 fg:mauve)";
+            untracked = "[?\($count\)](bg:surface0 fg:rosewater)";
+            stashed = "[\$](bg:surface0 fg:mauve)";
+            modified = "[!\($count\)](bg:surface0 fg:rosewater";
+            renamed = "[»\($count\)](bg:surface0 fg:mauve)";
+            deleted = "[✘\($count\)](style)";
+            staged = "[++\($count\)](bg:surface0 fg:rosewater)";
+            ahead = "[⇡\($count\)](bg:surface0 fg:lavender)";
+            diverged = "⇕[\[](bg:surface0 fg:mauve)[⇡\($ahead_count\)](bg:surface0 fg:lavender)[⇣\($behind_count\)](bg:surface0 fg:pink)[\]](bg:surface0 fg:mauve)";
+            behind = "[⇣\($count\)](bg:surface0 fg:pink)";
         };
 
         c = {
