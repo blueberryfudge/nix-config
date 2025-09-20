@@ -42,13 +42,13 @@
 
         directory = {
           style = "bg:sky fg:crust";
-          format = "[](fg:yellow)[󰀵 ](fg:black bg:yellow)[](fg:yellow bg:surface0)[ $path](fg:white bg:surface0)[](fg:surface0) ";
+          format = "[](fg:love)[󰀵 ](fg:black bg:love)[](fg:love bg:surface0)[ $path](fg:white bg:surface0)[](fg:surface0) ";
           # truncation_length = 3;
           # truncation_symbol = "…/";
         };
 
         git_branch = {
-          format = "[](fg:green)[$symbol](fg:black bg:green)[](fg:green bg:surface0)[ $branch](fg:white bg:surface0)[](fg:surface0) ";
+          format = "[](fg:rose)[$symbol](fg:black bg:rose)[](fg:rose bg:surface0)[ $branch](fg:white bg:surface0)[](fg:surface0) ";
           symbol = " "
 ;
         };
@@ -56,7 +56,7 @@
         git_status = {
           disabled = false;
           style = "bg:yellow";
-          format = "[](fg:sapphire)[ ](fg:black bg:sapphire)[](fg:sapphire bg:surface0)[ ($all_status$ahead_behind)](fg:white bg:surface0)[](fg:surface0)";
+          format = "[](fg:flamingo)[ ](fg:black bg:flamingo)[](fg:flamingo bg:surface0)[ ($all_status$ahead_behind)](fg:white bg:surface0)[](fg:surface0)";
             up_to_date = "[ ✓ ](bg:surface0 fg:mauve)";
             untracked = "[? ($count)](bg:surface0 fg:rosewater)";
             stashed = "[ $](bg:surface0 fg:mauve)";
@@ -128,7 +128,7 @@
           time_format = "%R";
           style = "bg:lavender";
           #format = "[[  $time ](fg:crust bg:lavender)]($style)";
-          format = "[](fg:mauve)[ ](fg:black bg:mauve)[](fg:mauve bg:surface0)[ $time](fg:white bg:surface0)[](fg:surface0) ";
+          format = "[](fg:pink)[ ](fg:black bg:pink)[](fg:pink bg:surface0)[ $time](fg:white bg:surface0)[](fg:surface0) ";
 
         };
 
@@ -161,6 +161,12 @@
           pink = "#f5c2e7";
           mauve = "#cba6f7";
           red = "#f38ba8";
+          love = "#eb6f92"; #rose-pine moon
+          gold = "#f6c177"; #rose-pine gold
+          pine = "#3e8fb0"; #rose-pine pine
+          foam = "#9ccfd8"; #rose-pine foam
+          iris = "#c4a7e7"; #rose-pine iris
+          rose = "#ea9a97"; #rose-pine rose
           maroon = "#eba0ac";
           peach = "#fab387";
           yellow = "#f9e2af";
