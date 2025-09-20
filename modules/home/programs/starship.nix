@@ -23,7 +23,7 @@
         command_timeout = 1000;
 
         format = "$directory$git_branch$git_status$cmd_duration$line_break$character";
-        right_format = "$c$rust$golang$nodejs$php$nix_shell$java$kotlin$haskell$python$scala";
+        right_format = "$c$rust$golang$nix_shell$java$kotlin$python$scala";
         palette = "catppuccin_mocha";
 
         username = {
@@ -43,7 +43,8 @@
 
         git_branch = {
           format = "[](fg:green)[$symbol](fg:black bg:green)[](fg:green bg:surface0)[ $branch](fg:white bg:surface0)[](fg:surface0) ";
-          symbol = " ";
+          symbol = " "
+;
         };
 
         git_status = {
@@ -51,38 +52,26 @@
           format = "[](fg:sapphire)[󰊢 ](fg:black bg:sapphire)[](fg:sapphire bg:surface0)[ ($all_status$ahead_behind)](fg:white bg:surface0)[](fg:surface0)";
         };
 
-        nodejs = {
-          symbol = "";
-          style = "bg:green";
-          format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
-        };
-
         c = {
-          symbol = " ";
+          symbol = " ";
           style = "bg:green";
           format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
         };
 
         rust = {
-          symbol = "";
+          symbol = "";
           style = "bg:green";
           format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
         };
 
         golang = {
-          symbol = "";
+          symbol = "";
           style = "bg:surface2";
           format = "[[ $symbol( $version) ](fg:surface2)]($style)";
         };
 
-        php = {
-          symbol = "";
-          style = "bg:green";
-          format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
-        };
-
         java = {
-          symbol = " ";
+          symbol = " ";
           style = "bg:green";
           format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
         };
@@ -94,47 +83,34 @@
         };
 
         kotlin = {
-          symbol = "";
+          symbol = " ";
           style = "bg:green";
           format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
         };
 
         nix_shell = {
-          symbol = " ";
+          symbol = "";
           style = "fg:surface1";
           format = "[$state( \\($name\\))]($style) ";
         };
 
-        haskell = {
-          symbol = "";
-          style = "bg:green";
-          format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
-        };
-
         python = {
-          symbol = "";
+          symbol = "";
           style = "bg:green";
           format = "[[ $symbol( $version)(\\(#$virtualenv\\)) ](fg:crust bg:green)]($style)";
         };
 
         docker_context = {
-          symbol = "";
+          symbol = "";
           style = "bg:sapphire";
           format = "[[ $symbol( $context) ](fg:crust bg:sapphire)]($style)";
-        };
-
-        conda = {
-          symbol = "  ";
-          style = "fg:crust bg:sapphire";
-          format = "[$symbol$environment ]($style)";
-          ignore_base = false;
         };
 
         time = {
           disabled = true;
           time_format = "%R";
           style = "bg:lavender";
-          format = "[[  $time ](fg:crust bg:lavender)]($style)";
+          format = "[[  $time ](fg:crust bg:lavender)]($style)";
         };
 
         line_break = {
