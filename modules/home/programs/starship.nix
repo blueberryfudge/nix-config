@@ -42,13 +42,13 @@
 
         directory = {
           style = "bg:sky fg:crust";
-          format = "[](fg:love)[󰀵 ](fg:black bg:love)[](fg:love bg:surface0)[ $path](fg:white bg:surface0)[](fg:surface0) ";
+          format = "[](fg:mauve)[ ](fg:black bg:mauve)[](fg:mauve bg:surface0)[ $path](fg:white bg:surface0)[](fg:surface0) ";
           # truncation_length = 3;
           # truncation_symbol = "…/";
         };
 
         git_branch = {
-          format = "[](fg:rose)[$symbol](fg:black bg:rose)[](fg:rose bg:surface0)[ $branch](fg:white bg:surface0)[](fg:surface0) ";
+          format = "[](fg:sapphire)[$symbol](fg:black bg:sapphire)[](fg:sapphire bg:surface0)[ $branch](fg:white bg:surface0)[](fg:surface0) ";
           symbol = " "
 ;
         };
@@ -56,7 +56,7 @@
         git_status = {
           disabled = false;
           style = "bg:yellow";
-          format = "[](fg:flamingo)[ ](fg:black bg:flamingo)[](fg:flamingo bg:surface0)[ ($all_status$ahead_behind)](fg:white bg:surface0)[](fg:surface0)";
+          format = "[](fg:sky)[ ](fg:black bg:sky)[](fg:sky bg:surface0)[ ($all_status$ahead_behind)](fg:white bg:surface0)[](fg:surface0)";
             up_to_date = "[ ✓ ](bg:surface0 fg:mauve)";
             untracked = "[? ($count)](bg:surface0 fg:rosewater)";
             stashed = "[ $](bg:surface0 fg:mauve)";
@@ -97,6 +97,9 @@
           symbol = "🆂  ";
           style = "fg:surface0";
           format = "[[ $symbol( $version) ](fg:surface1)]($style)";
+          detect_extensions = ["scala" "sbt" "mill"];
+          # detect_files = ["build.sbt" ".scalaenv" ".sbtenv" "build.sc" ".mill"];
+          disabled = true;
         };
 
         kotlin = {
@@ -128,7 +131,7 @@
           time_format = "%R";
           style = "bg:lavender";
           #format = "[[  $time ](fg:crust bg:lavender)]($style)";
-          format = "[](fg:pink)[ ](fg:black bg:pink)[](fg:pink bg:surface0)[ $time](fg:white bg:surface0)[](fg:surface0) ";
+          format = "[](fg:foam)[ ](fg:black bg:foam)[](fg:foam bg:surface0)[ $time](fg:white bg:surface0)[](fg:surface0) ";
 
         };
 
@@ -138,7 +141,7 @@
 
         character = {
           disabled = false;
-          success_symbol = "[ ➜](bold green)";
+          success_symbol = "[ ➜](bold fg:pine)";
           error_symbol = "[➜](bold fg:red)";
           vimcmd_symbol = "[❮](bold fg:green)";
           vimcmd_replace_one_symbol = "[❮](bold fg:lavender)";
