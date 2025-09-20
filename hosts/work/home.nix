@@ -20,6 +20,7 @@
   core-zsh.enable = true;
   core-git.enable = true;
   editor.enable = true;
+  starship.enable = true;
 
   # optional modules
   cli-tooling.enable = true;
