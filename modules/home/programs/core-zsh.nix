@@ -7,14 +7,15 @@
   user ? "edb",
   ...
 }:
-
-let
-  # Derive lunar tools from user
-  enableLunarTools = user == "edb";
-in
 {
+
   options = {
     core-zsh.enable = lib.mkEnableOption "enables core zsh tooling";
+    core-zsh.enableLunar = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable Lunar Zsh plugin and dotfiles.";
+    };
   };
 
   config = lib.mkIf config.core-zsh.enable {
@@ -26,8 +27,9 @@ in
       pkgs.eza
       pkgs.bat
       pkgs.wget
+      pkgs.zoxide
     ];
-    
+
     programs.zsh = {
       enable = true;
       autocd = true;
@@ -41,24 +43,24 @@ in
           src = pkgs.zsh-defer;
           file = "share/zsh-defer/zsh-defer.zsh";
         }
-      ] ++ lib.optionals enableLunarTools [
-        {
-          name = "lunar";
-          src = "${pkgs.lunar-zsh-plugin}/share/zsh/plugins/lunar-zsh-plugin/";
-          file = "lunar.plugin.zsh";
-        }
-      ];
+      ]
+      ++ lib.optional config.core-zsh.enableLunar {
+        name = "lunar";
+        src = "${pkgs.lunar-zsh-plugin}/share/zsh/plugins/lunar-zsh-plugin/";
+        file = "lunar.plugin.zsh";
+      };
 
       shellAliases = {
         # Base aliases (always available)
         ls = "eza -all --icons";
         lg = "lazygit";
         nu = "pushd ${nixDirectory} && nix flake update && popd";
-        ns = "pushd ${nixDirectory} && sudo darwin-rebuild switch --flake .#aarch64-darwin && popd";  # ← Fixed command
+        ns = "pushd ${nixDirectory} && sudo darwin-rebuild switch --flake .#aarch64-darwin && popd"; # ← Fixed command
         gn = "gitnow";
         "docker-compose" = "docker compose";
-      } // lib.optionalAttrs enableLunarTools {
+        }
         # Lunar-specific aliases (only if enabled)
+        // lib.optionalAttrs config.core-zsh.enableLunar {
         awsenv = "aws_fzf_profile";
         k8senv = "k8s_fzf_context";
         hubble = "aws_wrapper hubble";
@@ -89,8 +91,7 @@ in
 
             # k8s plugin manager
             [[ -f $(which krew) ]] || export PATH="$HOME/.krew/bin:$PATH"
-            
-            ${lib.optionalString enableLunarTools ''
+
             # shuttle
             [[ ! -f $(which shuttle) ]] || source <(shuttle completion zsh)
 
@@ -99,7 +100,6 @@ in
 
             # hamctl
             [[ ! -f $(which hamctl) ]] || source <(hamctl completion zsh)
-            ''}
 
             # starship
             [[ ! -f $(which starship) ]] || source <(starship init zsh)
@@ -121,10 +121,8 @@ in
             export EDITOR='hx'
             export MANPAGER='hx +Man!'
 
-            ${lib.optionalString enableLunarTools ''
             # Lunar-specific environment variables
             export LUNARCTL_REGISTRY="git=git@github.com:lunarway/lunarctl-registry.git"
-            ''}
           '';
         in
         lib.mkMerge [
@@ -144,8 +142,11 @@ in
     };
 
     # Only create lunar config files if lunar tools are enabled
-  } // lib.optionalAttrs enableLunarTools {
-    home.file.".aws/config".source = "${pkgs.lunar-zsh-plugin}/.aws/config";
-    home.file.".kube/config".source = "${pkgs.lunar-zsh-plugin}/.kube/config";
+    home.file = {}
+      // lib.optionalAttrs config.core-zsh.enableLunar {
+    ".aws/config".source = "${pkgs.lunar-zsh-plugin}/.aws/config";
+    ".kube/config".source = "${pkgs.lunar-zsh-plugin}/.kube/config";
+      };
+
   };
 }

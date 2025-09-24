@@ -18,6 +18,7 @@
 
   ## this are required and shouldn't be disabled
   core-zsh.enable = true;
+  core-zsh.enableLunar = true;
   core-git.enable = true;
   editor.enable = true;
   starship.enable = true;
