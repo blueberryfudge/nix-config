@@ -22,6 +22,8 @@
       marksman
       yaml-language-server
       prettier
+      gopls
+      gotools
     ];
 
     programs.helix = {
@@ -94,6 +96,7 @@
             name = "go";
             auto-format = true;
             formatter.command = "goimports";
+            language-servers = [ "gopls" ];
           }
           {
             name = "java";
