@@ -77,7 +77,7 @@
         rust = {
           symbol = "";
           style = "bg:surface2";
-          format = "[[ $symbol( $version) ](fg:crust bg:surface2)]($style)";
+          format = "[[ $symbol( $version) ](fg:crust)]($style)";
         };
 
         golang = {
@@ -89,7 +89,7 @@
         java = {
           symbol = " ";
           style = "bg:surface2";
-          format = "[[ $symbol( $version) ](fg:crust bg:surface2)]($style)";
+          format = "[[ $symbol( $version) ](fg:crust)]($style)";
         };
 
         scala = {
@@ -104,7 +104,7 @@
         kotlin = {
           symbol = " ";
           style = "bg:surface2";
-          format = "[[ $symbol( $version) ](fg:crust bg:surface2)]($style)";
+          format = "[[ $symbol( $version) ](fg:crust)]($style)";
         };
 
         nix_shell = {
@@ -116,19 +116,19 @@
         python = {
           symbol = "";
           style = "bg:surface2";
-          format = "[[ $symbol( $version)(\\(#$virtualenv\\)) ](fg:crust bg:surface2)]($style)";
+          format = "[[ $symbol( $version)(\\(#$virtualenv\\)) ](fg:crust)]($style)";
         };
 
         docker_context = {
           symbol = "";
-          style = "bg:sapphire";
-          format = "[[ $symbol( $context) ](fg:crust bg:sapphire)]($style)";
+          style = "bg:surface2";
+          format = "[[ $symbol( $context) ](fg:crust)]($style)";
         };
 
         time = {
           disabled = false;
           time_format = "%R";
-          style = "bg:lavender";
+          style = "bg:surface2";
           #format = "[[  $time ](fg:crust bg:lavender)]($style)";
           format = "[](fg:foam)[ ](fg:black bg:foam)[](fg:foam bg:surface0)[ $time](fg:white bg:surface0)[](fg:surface0) ";
 
