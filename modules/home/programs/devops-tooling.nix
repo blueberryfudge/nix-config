@@ -21,7 +21,6 @@ in
       kubectl
       kubeseal
       awscli2
-      kubelogin
       kubelogin-oidc
       krew
       kubernetes-helm
