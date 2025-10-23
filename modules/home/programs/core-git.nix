@@ -47,28 +47,41 @@ in
         "*.log"
       ];
 
-      userName = cfg.userName;
-      userEmail = cfg.userEmail;
-
       signing = {
         key = cfg.signingKey;
         signByDefault = defaultSigned;
       };
 
-      extraConfig = {
+      settings= {
+        user = {
+          name = cfg.userName;
+          email = cfg.userEmail;
+        };
+        
         init.defaultBranch = "main";
+
         gpg.format = "ssh";
+
         core = {
           editor = "hx";
           autocrlf = "input";
         };
+        
         pull.rebase = true;
+
         push = {
           default = "current";
           autoSetupRemote = true;
         };
+
         rebase.autoStash = true;
+
         branch.sort = "-committerdate";
+
+        alias = {
+          unstage = "reset HEAD --";
+          last = "log -1 HEAD";
+        };
 
         url."git@github.com:lunarway/" = lib.mkIf cfg.enableLunarUrls {
           insteadOf = "https://github.com/lunarway/";
@@ -89,10 +102,6 @@ in
         };
       };
 
-      aliases = {
-        unstage = "reset HEAD --";
-        last = "log -1 HEAD";
-      };
     };
 
     # NOTE: this is an example config for reference

@@ -36,36 +36,36 @@
           show_always = true;
           style_user = "bg:surface0 fg:surface2";
           style_root = "bg:surface0 fg:surface2";
-          format = "[](fg:surface0)[$user](fg:black bg:surface0)[](fg:surface0) ";
+          format = "[$user](fg:black bg:surface0)";
         };
 
         directory = {
-          style = "bg:sky fg:crust";
-          format = "[](fg:mauve)[ ](fg:black bg:mauve)[](fg:mauve bg:surface0)[ $path](fg:white bg:surface0)[](fg:surface0) ";
+          style = "fg:gold";
+          format = "[$path ]($style) ";
           # truncation_length = 3;
           # truncation_symbol = "…/";
         };
 
         git_branch = {
-          format = "[](fg:sapphire)[$symbol](fg:black bg:sapphire)[](fg:sapphire bg:surface0)[ $branch](fg:white bg:surface0)[](fg:surface0) ";
-          symbol = " "
-;
+          format = "[$symbol$branch]($style)";
+          style = "fg:foam";
+          symbol = " ";
         };
 
         git_status = {
           disabled = false;
-          style = "bg:yellow";
-          format = "[](fg:sky)[ ](fg:black bg:sky)[](fg:sky bg:surface0)[ ($all_status$ahead_behind)](fg:white bg:surface0)[](fg:surface0)";
-            up_to_date = "[ ✓ ](bg:surface0 fg:mauve)";
-            untracked = "[? ($count)](bg:surface0 fg:rosewater)";
-            stashed = "[ $](bg:surface0 fg:mauve)";
-            modified = "[! ($count)](bg:surface0 fg:rosewater)";
-            renamed = "[» ($count)](bg:surface0 fg:mauve)";
-            deleted = "[✘ ($count)](style)";
-            staged = "[++ ($count)](bg:surface0 fg:rosewater)";
-            ahead = "[⇡ ($count)](bg:surface0 fg:lavender)";
-            diverged = "⇕[\[](bg:surface0 fg:mauve)[⇡($ahead_count)](bg:surface0 fg:lavender)[⇣($behind_count)](bg:surface0 fg:pink)[\]](bg:surface0 fg:mauve)";
-            behind = "[⇣ ($count)](bg:surface0 fg:pink)";
+          style = "fg:yellow";
+          format = "($style)[ ($all_status$ahead_behind)](fg:foam)";
+            up_to_date = "[✓]( fg:mauve)";
+            untracked = "[?($count)]( fg:rosewater)";
+            stashed = "[$count]( fg:mauve)";
+            modified = "[!($count)]( fg:rosewater)";
+            renamed = "[»($count)]( fg:mauve)";
+            deleted = "[✘($count)](style)";
+            staged = "[++($count)]( fg:rosewater)";
+            ahead = "[⇡($count)](fg:lavender)";
+            diverged = "⇕[\[](fg:mauve)[⇡($ahead_count)](fg:lavender)[⇣($behind_count)](fg:pink)[\]](fg:mauve)";
+            behind = "[⇣($count)](fg:pink)";
         };
 
         c = {
@@ -126,11 +126,10 @@
         };
 
         time = {
-          disabled = false;
+          disabled = true;
           time_format = "%R";
           style = "bg:surface2";
-          #format = "[[  $time ](fg:crust bg:lavender)]($style)";
-          format = "[](fg:foam)[ ](fg:black bg:foam)[](fg:foam bg:surface0)[ $time](fg:white bg:surface0)[](fg:surface0) ";
+          format = "[ $time]($style)";
 
         };
 
