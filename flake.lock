@@ -19,9 +19,7 @@
     },
     "darwin": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
+        "nixpkgs": ["nixpkgs"]
       },
       "locked": {
         "lastModified": 1761339987,
@@ -132,9 +130,7 @@
     },
     "home-manager": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
+        "nixpkgs": ["nixpkgs"]
       },
       "locked": {
         "lastModified": 1761468550,
@@ -212,11 +208,11 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1761349956,
-        "narHash": "sha256-tH3wHnOJms+U4k/rK2Nn1RfBrhffX92jLP/2VndSn0w=",
+        "lastModified": 1760965567,
+        "narHash": "sha256-0JDOal5P7xzzAibvD0yTE3ptyvoVOAL0rcELmDdtSKg=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "02f2cb8e0feb4596d20cc52fda73ccee960e3538",
+        "rev": "cb82756ecc37fa623f8cf3e88854f9bf7f64af93",
         "type": "github"
       },
       "original": {
@@ -239,10 +235,7 @@
     },
     "rust-overlay": {
       "inputs": {
-        "nixpkgs": [
-          "helix",
-          "nixpkgs"
-        ]
+        "nixpkgs": ["helix", "nixpkgs"]
       },
       "locked": {
         "lastModified": 1759631821,
@@ -290,18 +283,9 @@
     },
     "zig": {
       "inputs": {
-        "flake-compat": [
-          "ghostty",
-          "flake-compat"
-        ],
-        "flake-utils": [
-          "ghostty",
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "ghostty",
-          "nixpkgs"
-        ]
+        "flake-compat": ["ghostty", "flake-compat"],
+        "flake-utils": ["ghostty", "flake-utils"],
+        "nixpkgs": ["ghostty", "nixpkgs"]
       },
       "locked": {
         "lastModified": 1760401936,
