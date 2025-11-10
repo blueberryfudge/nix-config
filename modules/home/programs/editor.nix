@@ -24,6 +24,7 @@
       prettier
       gopls
       gotools
+      jdt-language-server
     ];
 
     programs.helix = {
@@ -74,8 +75,17 @@
           config.markdown.preview.auto = true;
         };
 
-        language-server.metals.config.metals.autoImportBuild = "all";
-
+        language-server.metals = {
+          config = {
+            metals = {
+              autoImportBuild = "all";
+              showImplicitArguments = true;
+              showImplicitConversions = true;
+              showInferredType = true;
+              superMethodLensesEnabled = true;
+            };
+          };
+        };
         language = [
           {
             name = "python";
@@ -105,6 +115,7 @@
               "jav"
               "pde"
             ];
+            language-servers = [ "jdtls" ];
           }
           {
             name = "yaml";
