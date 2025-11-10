@@ -79,10 +79,15 @@
           config = {
             metals = {
               autoImportBuild = "all";
+              scalafixConfigPath = ".scalafix.conf";
+              compilerOptions = {
+                isCompletionSnippetsEntabled = true;
+              };
               showImplicitArguments = true;
               showImplicitConversions = true;
               showInferredType = true;
               superMethodLensesEnabled = true;
+              java.format.enabled = false;
             };
           };
         };

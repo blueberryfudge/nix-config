@@ -21,6 +21,7 @@
   core-git.enable = true;
   core-zsh.enableLunar = false;
   editor.enable = true;
+  zellij.enable = true;
   starship.enable = true;
 
   # optional modules
