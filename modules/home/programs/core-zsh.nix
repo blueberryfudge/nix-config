@@ -109,6 +109,10 @@
               export GITHUB_ACCESS_TOKEN=$(gh auth token);
             fi
 
+            if [[ $GITHUB_LUNAR_CI_TOKEN = "" ]]; then
+              export GITHUB_LUNAR_CI_TOKEN=$(gh auth token);
+            fi
+
             if [[ $GITHUB_TOKEN == "" ]]; then
               export GITHUB_TOKEN=$(gh auth token);
             fi
