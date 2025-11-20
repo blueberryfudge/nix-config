@@ -40,6 +40,7 @@
           color-modes = true;
           true-color = true;
           end-of-line-diagnostics = "hint";
+          soft-wrap.enable = true;
 
           inline-diagnostics = {
             cursor-line = "warning";
