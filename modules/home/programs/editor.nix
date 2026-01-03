@@ -94,6 +94,12 @@
         };
         language = [
           {
+            name = "scala";
+            file-types = [ "scala" "sbt" "sc" "mill"];
+            roots = [ "build.mill" "build.sbt" "build.sc" ".scala-build" ".git"];
+            language-servers = [ "metals" ];
+          }
+          {
             name = "python";
             language-servers = [
               "pyright"
