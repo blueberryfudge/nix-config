@@ -24,6 +24,7 @@
       prettier
       gopls
       gotools
+      delve
       jdt-language-server
     ];
 
@@ -95,8 +96,19 @@
         language = [
           {
             name = "scala";
-            file-types = [ "scala" "sbt" "sc" "mill"];
-            roots = [ "build.mill" "build.sbt" "build.sc" ".scala-build" ".git"];
+            file-types = [
+              "scala"
+              "sbt"
+              "sc"
+              "mill"
+            ];
+            roots = [
+              "build.mill"
+              "build.sbt"
+              "build.sc"
+              ".scala-build"
+              ".git"
+            ];
             language-servers = [ "metals" ];
           }
           {
@@ -118,7 +130,9 @@
             name = "go";
             auto-format = true;
             formatter.command = "goimports";
-            language-servers = [ "gopls" ];
+            language-servers = [
+              "gopls"
+            ];
           }
           {
             name = "java";
