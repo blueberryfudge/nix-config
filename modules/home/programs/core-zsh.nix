@@ -28,6 +28,7 @@
       pkgs.bat
       pkgs.wget
       pkgs.zoxide
+      pkgs.lunarctl
     ];
 
     programs.zsh = {
