@@ -341,11 +341,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1767019875,
-        "narHash": "sha256-NodN+lhWTD59b44Q2bPjE1edINfjfRkQYdZsrxifCeU=",
+        "lastModified": 1770585520,
+        "narHash": "sha256-yBz9Ozd5Wb56i3e3cHZ8WcbzCQ9RlVaiW18qDYA/AzA=",
         "owner": "nix-community",
         "repo": "gomod2nix",
-        "rev": "49662a44272806ff785df2990a420edaaca15db4",
+        "rev": "1201ddd1279c35497754f016ef33d5e060f3da8d",
         "type": "github"
       },
       "original": {
@@ -450,11 +450,11 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1759411370,
-        "narHash": "sha256-ND7GwXK0AYK3ccVU4Pw9/wxmCEe4q3pzjjUvg1q0mes=",
+        "lastModified": 1770632890,
+        "narHash": "sha256-CppMAbSTdQYk8pRMhTpofrOi/pv7AN+/LDOE/fdeWbY=",
         "ref": "refs/heads/master",
-        "rev": "d805c6e41bdfdb5f55a122a2cf577705080662c2",
-        "revCount": 149,
+        "rev": "3060c31418fded35508fd7113479e4f58b624ef1",
+        "revCount": 153,
         "type": "git",
         "url": "ssh://git@github.com/lunarway/hubble-cli"
       },
@@ -476,11 +476,11 @@
         "shuttle": "shuttle"
       },
       "locked": {
-        "lastModified": 1769595879,
-        "narHash": "sha256-drH5FPAYD/VhMWbyIB3Pp/Bbm2cIKaAMwByaPTTi2bc=",
+        "lastModified": 1770634442,
+        "narHash": "sha256-WbK/sEH8F3IuGJqU55zIaXHoy9sUVMIIzZ0cB/k3Sos=",
         "ref": "refs/heads/master",
-        "rev": "873dc7b66a57c707eca688fc8b388b6029b022f9",
-        "revCount": 15,
+        "rev": "bad51529834971efecbd7491becb52a5151e72c6",
+        "revCount": 17,
         "type": "git",
         "url": "ssh://git@github.com/lunarway/lw-nix"
       },
@@ -764,11 +764,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1769742225,
-        "narHash": "sha256-roSD/OJ3x9nF+Dxr+/bLClX3U8FP9EkCQIFpzxKjSUM=",
+        "lastModified": 1771384185,
+        "narHash": "sha256-KvmjUeA7uODwzbcQoN/B8DCZIbhT/Q/uErF1BBMcYnw=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "bcdd8d37594f0e201639f55889c01c827baf5c75",
+        "rev": "23dd7fa91602a68bd04847ac41bc10af1e6e2fd2",
         "type": "github"
       },
       "original": {
