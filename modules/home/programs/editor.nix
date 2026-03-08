@@ -79,7 +79,9 @@
 
         language-server.metals = {
           config = {
+            isHttpEnabled = true;
             metals = {
+              javaHome = "${pkgs.jdk17_headless}/lib/openjdk";
               autoImportBuild = "all";
               scalafixConfigPath = ".scalafix.conf";
               compilerOptions = {

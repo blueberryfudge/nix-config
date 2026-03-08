@@ -7,6 +7,7 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
     darwin = {
       url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -25,6 +26,7 @@
       home-manager,
       nix-homebrew,
       flake-utils,
+      determinate,
       helix,
       ghostty,
       ...
@@ -59,6 +61,7 @@
             {nixpkgs.overlays = overlays; }
             home-manager.darwinModules.home-manager
             nix-homebrew.darwinModules.nix-homebrew
+            determinate.darwinModules.default
             hostModule
             (import ./modules/shared/homemanager.nix {
               inherit nixfiles user nixDirectory homeModule inputs gitConfig;
