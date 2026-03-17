@@ -23,7 +23,7 @@
         command_timeout = 1000;
 
         format = "$directory$git_branch$git_status$fill$time$line_break$username$character";
-        right_format = "$c$rust$golang$nix_shell$java$kotlin$python$scala";
+        right_format = "$c$rust$golang$nix_shell$java$kotlin$scala";
         palette = "catppuccin_mocha";
 
         fill = {
@@ -114,9 +114,12 @@
         };
 
         python = {
-          symbol = "";
-          style = "bg:surface2";
-          format = "[[ $symbol( $version)(\\(#$virtualenv\\)) ](fg:crust)]($style)";
+          disabled = true;
+          symbol = " ";
+          style = "fg:surface1";
+          format = "[$symbol( $version)( \\($virtualenv\\))]($style) ";
+          # Only show in Python project directories, not just because VIRTUAL_ENV is set.
+          detect_env_vars = [];
         };
 
         docker_context = {

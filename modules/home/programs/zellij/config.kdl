@@ -121,27 +121,27 @@ keybinds clear-defaults=true {
             SwitchToMode "normal"
         }
     }
-    // shared_except "locked" {
-    //     bind "Alt left" { MoveFocusOrTab "left"; }
-    //     bind "Alt down" { MoveFocus "down"; }
-    //     bind "Alt up" { MoveFocus "up"; }
-    //     bind "Alt right" { MoveFocusOrTab "right"; }
-    //     bind "Alt +" { Resize "Increase"; }
-    //     bind "Alt -" { Resize "Decrease"; }
-    //     bind "Alt =" { Resize "Increase"; }
-    //     bind "Alt [" { PreviousSwapLayout; }
-    //     bind "Alt ]" { NextSwapLayout; }
-    //     bind "Alt f" { ToggleFloatingPanes; }
-    //     bind "Ctrl g" { SwitchToMode "locked"; }
-    //     bind "Alt h" { MoveFocusOrTab "left"; }
-    //     bind "Alt i" { MoveTab "left"; }
-    //     bind "Alt j" { MoveFocus "down"; }
-    //     bind "Alt k" { MoveFocus "up"; }
-    //     bind "Alt l" { MoveFocusOrTab "right"; }
-    //     bind "Alt n" { NewPane; }
-    //     bind "Alt o" { MoveTab "right"; }
-    //     bind "Ctrl q" { Quit; }
-    // }
+    shared_except "locked" {
+        bind "Alt left" { MoveFocusOrTab "left"; }
+        bind "Alt down" { MoveFocus "down"; }
+        bind "Alt up" { MoveFocus "up"; }
+        bind "Alt right" { MoveFocusOrTab "right"; }
+        bind "Alt +" { Resize "Increase"; }
+        bind "Alt -" { Resize "Decrease"; }
+        bind "Alt =" { Resize "Increase"; }
+        bind "Alt [" { PreviousSwapLayout; }
+        bind "Alt ]" { NextSwapLayout; }
+        bind "Alt f" { ToggleFloatingPanes; }
+        bind "Ctrl g" { SwitchToMode "locked"; }
+        bind "Alt h" { MoveFocusOrTab "left"; }
+        bind "Alt i" { MoveTab "left"; }
+        bind "Alt j" { MoveFocus "down"; }
+        bind "Alt k" { MoveFocus "up"; }
+        bind "Alt l" { MoveFocusOrTab "right"; }
+        bind "Alt n" { NewPane; }
+        bind "Alt o" { MoveTab "right"; }
+        bind "Ctrl q" { Quit; }
+    }
     shared_except "locked" "move" {
         bind "Ctrl h" { SwitchToMode "move"; }
     }
@@ -331,8 +331,10 @@ layout_dir ".config/zellij/layouts/"
 // Options:
 //   - true (default, enabled)
 //   - false
-// 
-pane_frames false
+//
+// NOTE: stacked panes currently redraw poorly in frameless mode
+// (prompt/path duplication on focus switch), so keep this enabled.
+pane_frames true
  
 // When attaching to an existing session with other users,
 // should the session be mirrored (true)

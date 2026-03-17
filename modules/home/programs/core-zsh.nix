@@ -90,6 +90,36 @@
                 eval "$(/opt/homebrew/bin/brew shellenv)"
             fi
 
+            # Opt-in auto-attach/create one Zellij session per project root.
+            # Enable with: export ZELLIJ_AUTO_ATTACH=true
+            # Disable with: export ZELLIJ_AUTO_ATTACH_DISABLE=1
+            if [[ -o interactive && -z "$ZELLIJ" && -z "$SSH_CONNECTION" && "$ZELLIJ_AUTO_ATTACH" == "true" && -z "$ZELLIJ_AUTO_ATTACH_DISABLE" ]] && command -v zellij >/dev/null 2>&1; then
+              function _zellij_auto_session_name() {
+                local root base hash session_name
+
+                if command -v git >/dev/null 2>&1; then
+                  root="$(git rev-parse --show-toplevel 2>/dev/null || print -r -- "$PWD")"
+                else
+                  root="$PWD"
+                fi
+
+                if [[ "$root" == "/" ]]; then
+                  base="root"
+                else
+                  base="''${root##*/}"
+                  [[ -n "$base" ]] || base="shell"
+                fi
+
+                hash="$(print -rn -- "$root" | shasum | cut -c1-6)"
+                session_name="''${base}-''${hash}"
+                session_name="''${session_name//[^[:alnum:]_.-]/-}"
+                print -r -- "$session_name"
+              }
+
+              zellij attach -c "$(_zellij_auto_session_name)"
+              unset -f _zellij_auto_session_name
+            fi
+
             # k8s plugin manager
             [[ -f $(which krew) ]] || export PATH="$HOME/.krew/bin:$PATH"
 
@@ -102,8 +132,41 @@
             # hamctl
             [[ ! -f $(which hamctl) ]] || source <(hamctl completion zsh)
 
-            # starship
-            [[ ! -f $(which starship) ]] || source <(starship init zsh)
+            # Update Zellij pane titles (via OSC title) to "<dirname> (<git-branch>) [root-hash]".
+            # This makes pane frames much more informative than "Pane #N".
+            function _zellij_pane_title_update() {
+              [[ -n "$ZELLIJ" ]] || return
+
+              local dir branch pane_title root session_hash
+              if [[ "$PWD" == "$HOME" ]]; then
+                dir="~"
+              elif [[ "$PWD" == "/" ]]; then
+                dir="/"
+              else
+                dir="''${PWD##*/}"
+              fi
+
+              root="$PWD"
+              if command -v git >/dev/null 2>&1; then
+                root="$(git rev-parse --show-toplevel 2>/dev/null || print -r -- "$PWD")"
+                if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+                  branch="$(git symbolic-ref --quiet --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)"
+                fi
+              fi
+              session_hash="$(print -rn -- "$root" | shasum | cut -c1-6)"
+
+              pane_title="$dir"
+              if [[ -n "$branch" ]]; then
+                pane_title="$dir ($branch)"
+              fi
+              pane_title="$pane_title [$session_hash]"
+
+              printf '\e]2;%s\a' "$pane_title"
+            }
+
+            autoload -Uz add-zsh-hook
+            add-zsh-hook chpwd _zellij_pane_title_update
+            add-zsh-hook precmd _zellij_pane_title_update
 
             # refresh $GITHUB_ACCESS_TOKEN if unset
             if [[ $GITHUB_ACCESS_TOKEN == "" ]]; then
@@ -146,12 +209,24 @@
       enableZshIntegration = true;
     };
 
-    # Only create lunar config files if lunar tools are enabled
-    home.file = {}
-      // lib.optionalAttrs config.core-zsh.enableLunar {
-    ".aws/config".source = "${pkgs.lunar-zsh-plugin}/.aws/config";
-    ".kube/config".source = "${pkgs.lunar-zsh-plugin}/.kube/config";
-      };
+    # Seed mutable local copies for tools that write to these files.
+    home.activation.seedLunarConfigs = lib.mkIf config.core-zsh.enableLunar (
+      lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        mkdir -p "$HOME/.aws" "$HOME/.kube"
+
+        if [ -L "$HOME/.aws/config" ] || [ ! -e "$HOME/.aws/config" ] || [ ! -w "$HOME/.aws/config" ]; then
+          rm -f "$HOME/.aws/config"
+          cp "${pkgs.lunar-zsh-plugin}/.aws/config" "$HOME/.aws/config"
+          chmod 600 "$HOME/.aws/config"
+        fi
+
+        if [ -L "$HOME/.kube/config" ] || [ ! -e "$HOME/.kube/config" ] || [ ! -w "$HOME/.kube/config" ]; then
+          rm -f "$HOME/.kube/config"
+          cp "${pkgs.lunar-zsh-plugin}/.kube/config" "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
+        fi
+      ''
+    );
 
   };
 }
