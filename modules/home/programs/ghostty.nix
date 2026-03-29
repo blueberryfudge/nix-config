@@ -5,6 +5,10 @@
   config,
   ...
 }:
+let
+  # The Ghostty flake overlay in this repo currently exposes Linux-only builds.
+  installGhosttyFromNix = pkgs.stdenv.hostPlatform.isLinux;
+in
 {
   options = {
     ghostty.enable = lib.mkEnableOption "enables ghostty terminal";
@@ -19,8 +23,8 @@
       description = "ghostty font size";
     };
     ghostty.fontFamily = lib.mkOption {
-      type = lib.types.int;
-      default = "FiraCode Nerd Font";
+      type = lib.types.str;
+      default = "Monaspace Argon";
       description = "ghostty font family";
     };
     ghostty.windowWidth = lib.mkOption {
@@ -36,8 +40,8 @@
   };
 
   config = lib.mkIf config.ghostty.enable {
-    home.packages = with pkgs; [
-      ghostty
+    home.packages = lib.optionals installGhosttyFromNix [
+      pkgs.ghostty
     ];
 
     home.file.".config/ghostty/config".text = ''
@@ -54,8 +58,14 @@
       window-width = ${toString config.ghostty.windowWidth}
       window-save-state = always
 
+      macos-option-as-alt = true
+
+      keybind = alt+left=unbind
+      keybind = alt+right=unbind
+
+
       font-size = ${toString config.ghostty.fontSize}
-      font-family = ${toString config.ghostty.fontFamily}
+      font-family = ${config.ghostty.fontFamily}
     '';
   
     home.file.".config/ghostty/themes/catppuccin-mocha".text = ''

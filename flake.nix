@@ -44,10 +44,7 @@
           enableHomeBrew ? false,
         }:
         let
-          overlays = [
-            helix.overlays.default
-            ghostty.overlays.default
-          ] ++ extraOverlays;
+          overlays = extraOverlays;
 
           nixfiles = ./.;
         in

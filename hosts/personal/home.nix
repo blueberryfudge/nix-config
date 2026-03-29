@@ -10,8 +10,8 @@
 
   home.packages = with pkgs; [
     neofetch
-    nerd-fonts.fira-code
-    nerd-fonts.fira-mono
+    monaspace
+    nerd-fonts.symbols-only
   ];
 
   home.sessionVariables = { };
@@ -21,6 +21,8 @@
   core-git.enable = true;
   core-zsh.enableLunar = false;
   editor.enable = true;
+  ghostty.enable = true;
+  ghostty.fontFamily = "Monaspace Neon";
   zellij.enable = true;
   starship.enable = true;
 
