@@ -24,8 +24,18 @@ in
     };
     ghostty.fontFamily = lib.mkOption {
       type = lib.types.str;
-      default = "Monaspace Argon";
+      default = "Monaspace Neon";
       description = "ghostty font family";
+    };
+    ghostty.fontThicken = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Whether to thicken Ghostty font strokes (macOS only).";
+    };
+    ghostty.fontThickenStrength = lib.mkOption {
+      type = lib.types.ints.between 0 255;
+      default = 10;
+      description = "Ghostty font thickening strength, from 0 to 255 (macOS only).";
     };
     ghostty.windowWidth = lib.mkOption {
       type = lib.types.int;
@@ -65,7 +75,10 @@ in
 
 
       font-size = ${toString config.ghostty.fontSize}
-      font-family = ${config.ghostty.fontFamily}
+      font-family = "${config.ghostty.fontFamily}"
+      font-family = "monospace"
+      font-thicken = ${if config.ghostty.fontThicken then "true" else "false"}
+      font-thicken-strength = ${toString config.ghostty.fontThickenStrength}
     '';
   
     home.file.".config/ghostty/themes/catppuccin-mocha".text = ''

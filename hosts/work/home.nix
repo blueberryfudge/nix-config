@@ -11,6 +11,7 @@
   home.packages = with pkgs; [
     neofetch
     monaspace
+    nerd-fonts.jetbrains-mono
     nerd-fonts.symbols-only
   ];
 
@@ -22,7 +23,8 @@
   core-git.enable = true;
   editor.enable = true;
   ghostty.enable = true;
-  ghostty.fontFamily = "Monaspace Neon";
+  ghostty.fontFamily = "JetBrainsMono Nerd Font Mono";
+  ghostty.fontThicken = false;
   zellij.enable = true;
   starship.enable = true;
 
