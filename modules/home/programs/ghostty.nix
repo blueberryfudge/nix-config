@@ -102,8 +102,8 @@ in
       foreground = cdd6f4
       cursor-color = f5e0dc
       cursor-text = 1e1e2e
-      selection-background = 353749
-      selection-foreground = cdd6f4
+      selection-background = f9e2af
+      selection-foreground = 1e1e2e
     '';
   };
 }
