@@ -29,6 +29,7 @@
   starship.enable = true;
 
   # optional modules
+  ai-agents.enable = true;
   cli-tooling.enable = true;
   devops-tooling.enable = true;
   # matrix-tooling.enable = true;
