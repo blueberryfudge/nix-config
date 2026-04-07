@@ -18,8 +18,8 @@
     notes_file="$HOME/.claude/compact-notes.md"
     {
       printf '## %s\n' "$timestamp"
-      printf '- branch: %s\n' "$branch"
-      printf '- cwd: %s\n' "$cwd"
+      printf '%s\n' "- branch: $branch"
+      printf '%s\n' "- cwd: $cwd"
       printf '\n### Recent commits\n'
       ${pkgs.git}/bin/git -C "$cwd" log --oneline -5 2>/dev/null || true
       printf '\n### Modified files\n'

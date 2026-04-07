@@ -21,12 +21,12 @@ let
     };
   };
   agentDefs = {
-    architect = import (dataPath "defs/agents/architect.nix");
-    bob-the-builder = import (dataPath "defs/agents/bob-the-builder.nix");
-    doc-bot = import (dataPath "defs/agents/doc-bot.nix");
-    four-eyes = import (dataPath "defs/agents/four-eyes.nix");
-    mr-robot = import (dataPath "defs/agents/mr-robot.nix");
-    truffle-pig = import (dataPath "defs/agents/truffle-pig.nix");
+    code-architect = import (dataPath "defs/agents/code-architect.nix");
+    code-engineer = import (dataPath "defs/agents/code-engineer.nix");
+    code-documenter = import (dataPath "defs/agents/code-documenter.nix");
+    code-reviewer = import (dataPath "defs/agents/code-reviewer.nix");
+    code-security = import (dataPath "defs/agents/code-security.nix");
+    code-searcher = import (dataPath "defs/agents/code-searcher.nix");
   };
 
   skillDefs = {
@@ -38,7 +38,6 @@ let
   };
 
   hookDefs = {
-    pre-compact = import (dataPath "defs/hooks/pre-compact.nix") { inherit pkgs; };
     shell-guard = import (dataPath "defs/hooks/shell-guard.nix") { inherit pkgs; };
     session-context = import (dataPath "defs/hooks/session-context.nix") { inherit pkgs; };
   };
@@ -315,6 +314,8 @@ let
 
     remaining=$(echo "$input" | ${pkgs.jq}/bin/jq -r '.context_window.remaining_percentage // empty')
 
+    cost=$(echo "$input" | ${pkgs.jq}/bin/jq -r '.cost.total_cost_usd // empty')
+
     out=""
     out="''${out}''${gold}''${dir}''${reset}"
 
@@ -333,6 +334,11 @@ let
       out="''${out} ''${pine}|''${reset} ''${rosewater}ctx:''${printf_remaining}%''${reset}"
     fi
 
+    if [[ -n "$cost" ]]; then
+      printf_cost=$(printf '%.4f' "$cost")
+      out="''${out} ''${pine}|''${reset} ''${foam}\$''${printf_cost}''${reset}"
+    fi
+
     printf "%b" "$out"
   '';
 
@@ -343,6 +349,9 @@ let
       statusLine = {
         type = "command";
         command = "${claudeStatusLineScript}";
+      };
+      enabledPlugins = {
+        "code-simplifier@claude-plugins-official" = true;
       };
     }
     // lib.optionalAttrs (claudeHooks != { }) {

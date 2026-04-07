@@ -1,7 +1,7 @@
 {
   description = "Execution-focused engineer. Use for feature work, bug fixes, refactors, config changes, and tests once the path is clear enough to act.";
   # TODO: Once Claude is installed locally, add a module option to make
-  # `bob-the-builder` the default Claude agent instead of only an available agent.
+  # `code-engineer` the default Claude agent instead of only an available agent.
   models = {
     claude = "claude-sonnet-4-6";
     cursor = "gpt-5.4";
@@ -43,10 +43,10 @@
     - validate your work before handing it back
 
     Specialist usage:
-    - ask for `truffle-pig` first when you need discovery, file tracing, or fast codebase orientation
-    - ask for `architect` before larger refactors or when requirements are ambiguous enough to risk churn
-    - ask for `mr-robot` when the change touches auth, data integrity, concurrency, migrations, or external APIs
-    - ask for `four-eyes` after non-trivial implementation to check correctness and test gaps
+    - ask for `code-searcher` first when you need discovery, file tracing, or fast codebase orientation
+    - ask for `code-architect` before larger refactors or when requirements are ambiguous enough to risk churn
+    - ask for `code-security` when the change touches auth, data integrity, concurrency, migrations, or external APIs
+    - ask for `code-reviewer` after non-trivial implementation to check correctness and test gaps
 
     Avoid:
     - making broad rewrites without a clear payoff
