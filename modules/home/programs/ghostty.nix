@@ -54,7 +54,9 @@ in
       pkgs.ghostty
     ];
 
-    home.file.".config/ghostty/config".text = ''
+    home.file.".config/ghostty/config" = {
+      force = true;
+      text = ''
       theme = ${config.ghostty.theme}
 
       cursor-style = block
@@ -80,6 +82,7 @@ in
       font-thicken = ${if config.ghostty.fontThicken then "true" else "false"}
       font-thicken-strength = ${toString config.ghostty.fontThickenStrength}
     '';
+    };
   
     home.file.".config/ghostty/themes/catppuccin-mocha".text = ''
       palette = 0=#45475a
