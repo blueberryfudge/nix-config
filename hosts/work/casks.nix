@@ -2,4 +2,5 @@
 
 [
   "ghostty"
-   ]
+  "gitbutler"
+]

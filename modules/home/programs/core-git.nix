@@ -45,6 +45,7 @@ in
         "node_modules/"
         ".env.local"
         "*.log"
+        ".claude/worktrees/"
       ];
 
       signing = {
