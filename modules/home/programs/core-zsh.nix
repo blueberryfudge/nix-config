@@ -90,6 +90,11 @@
                 eval "$(/opt/homebrew/bin/brew shellenv)"
             fi
 
+            # Sync theme configs to current macOS appearance before Zellij starts.
+            if command -v toggle-theme >/dev/null 2>&1; then
+              toggle-theme
+            fi
+
             # Opt-in auto-attach/create one Zellij session per project root.
             # Enable with: export ZELLIJ_AUTO_ATTACH=true
             # Disable with: export ZELLIJ_AUTO_ATTACH_DISABLE=1
@@ -167,6 +172,18 @@
             autoload -Uz add-zsh-hook
             add-zsh-hook chpwd _zellij_pane_title_update
             add-zsh-hook precmd _zellij_pane_title_update
+
+            # Background watcher: polls macOS appearance every 2s and runs
+            # toggle-theme on change.  One watcher per top-level shell (not
+            # inside Zellij panes, to avoid duplicates).
+            if [[ -z "$ZELLIJ" ]] && command -v toggle-theme >/dev/null 2>&1; then
+              (
+                while true; do
+                  toggle-theme 2>/dev/null
+                  sleep 2
+                done
+              ) &!
+            fi
 
             # refresh $GITHUB_ACCESS_TOKEN if unset
             if [[ $GITHUB_ACCESS_TOKEN == "" ]]; then

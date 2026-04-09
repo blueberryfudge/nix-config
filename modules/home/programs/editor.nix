@@ -5,6 +5,42 @@
   config,
   ...
 }:
+let
+  tomlFormat = pkgs.formats.toml { };
+  helixSettings = {
+    theme = config.editor.theme;
+
+    editor = {
+      auto-info = true;
+      line-number = "relative";
+      bufferline = "multiple";
+      color-modes = true;
+      true-color = true;
+      end-of-line-diagnostics = "hint";
+      soft-wrap.enable = true;
+
+      inline-diagnostics = {
+        cursor-line = "warning";
+      };
+
+      statusline = {
+        right = [ "workspace-diagnostics" ];
+        center = [ "version-control" ];
+        mode = {
+          normal = "NOR";
+          insert = "INS";
+          select = "SEL";
+        };
+      };
+    };
+
+    keys.normal = {
+      "C-y" =
+        ":sh zellij run -n Yazi -c -f -x 10%% -y 10%% --width 80%% --height 80%% -- bash ~/.config/helix/yazi-picker.sh open %{buffer_name}";
+    };
+  };
+  helixConfigFile = tomlFormat.generate "helix-config.toml" helixSettings;
+in
 {
   options = {
     editor.enable = lib.mkEnableOption "enables Helix editor";
@@ -30,39 +66,6 @@
 
     programs.helix = {
       enable = true;
-
-      settings = {
-        theme = config.editor.theme;
-
-        editor = {
-          auto-info = true;
-          line-number = "relative";
-          bufferline = "multiple";
-          color-modes = true;
-          true-color = true;
-          end-of-line-diagnostics = "hint";
-          soft-wrap.enable = true;
-
-          inline-diagnostics = {
-            cursor-line = "warning";
-          };
-
-          statusline = {
-            right = [ "workspace-diagnostics" ];
-            center = [ "version-control" ];
-            mode = {
-              normal = "NOR";
-              insert = "INS";
-              select = "SEL";
-            };
-          };
-        };
-
-        keys.normal = {
-          "C-y" =
-            ":sh zellij run -n Yazi -c -f -x 10%% -y 10%% --width 80%% --height 80%% -- bash ~/.config/helix/yazi-picker.sh open %{buffer_name}";
-        };
-      };
 
       languages = {
         language-server.rust-analyzer.config = {
@@ -194,5 +197,19 @@
         ];
       };
     };
+
+    home.activation.helixMutableConfig =
+      lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        helix_dir="$HOME/.config/helix"
+        mkdir -p "$helix_dir"
+        dst="$helix_dir/config.toml"
+        if [ -L "$dst" ]; then
+          rm -f "$dst"
+        fi
+        if [ ! -e "$dst" ]; then
+          cp "${helixConfigFile}" "$dst"
+          chmod 644 "$dst"
+        fi
+      '';
   };
 }

@@ -165,12 +165,12 @@
           pink = "#f5c2e7";
           mauve = "#cba6f7";
           red = "#f38ba8";
-          love = "#eb6f92"; #rose-pine moon
-          gold = "#f6c177"; #rose-pine gold
-          pine = "#3e8fb0"; #rose-pine pine
-          foam = "#9ccfd8"; #rose-pine foam
-          iris = "#c4a7e7"; #rose-pine iris
-          rose = "#ea9a97"; #rose-pine rose
+          love = "#eb6f92";
+          gold = "#f6c177";
+          pine = "#3e8fb0";
+          foam = "#9ccfd8";
+          iris = "#c4a7e7";
+          rose = "#ea9a97";
           maroon = "#eba0ac";
           peach = "#fab387";
           yellow = "#f9e2af";
@@ -192,6 +192,41 @@
           base = "#1e1e2e";
           mantle = "#181825";
           crust = "#11111b";
+        };
+
+        palettes.rose_pine_dawn = {
+          rosewater = "#d7827e";
+          flamingo = "#d7827e";
+          pink = "#b4637a";
+          mauve = "#907aa9";
+          red = "#b4637a";
+          love = "#b4637a";
+          gold = "#b4637a";   # love — gold is muddy on light bg, use love (strong pink) instead
+          pine = "#286983";
+          foam = "#286983";   # pine — foam is low contrast on light bg, use pine (deep teal)
+          iris = "#907aa9";
+          rose = "#d7827e";
+          maroon = "#b4637a";
+          peach = "#ea9d34";
+          yellow = "#ea9d34";
+          green = "#286983";
+          teal = "#56949f";
+          sky = "#56949f";
+          sapphire = "#286983";
+          blue = "#286983";
+          lavender = "#907aa9";
+          text = "#575279";
+          subtext1 = "#6e6a86";
+          subtext0 = "#797593";
+          overlay2 = "#797593";
+          overlay1 = "#6e6a86";
+          overlay0 = "#797593";
+          surface2 = "#dfdad9";
+          surface1 = "#f2e9e1";
+          surface0 = "#f4ede8";
+          base = "#faf4ed";
+          mantle = "#fffaf3";
+          crust = "#f2e9e1";
         };
       };
     };

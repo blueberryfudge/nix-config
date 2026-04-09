@@ -27,6 +27,7 @@
   ghostty.fontThicken = false;
   zellij.enable = true;
   starship.enable = true;
+  theme-switcher.enable = true;
 
   # optional modules
   ai-agents.enable = true;

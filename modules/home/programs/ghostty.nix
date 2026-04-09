@@ -57,7 +57,7 @@ in
     home.file.".config/ghostty/config" = {
       force = true;
       text = ''
-      theme = ${config.ghostty.theme}
+      theme = light:Rose Pine Dawn,dark:${config.ghostty.theme}
 
       cursor-style = block
       cursor-color = #727af4

@@ -3,24 +3,31 @@ layout {
         children
         pane size=1 borderless=true {
             plugin location="file:~/.config/zellij/layouts/zjstatus.wasm" {
-            format_left  "{mode}#[fg=#89B4FA,bg=#1e1e2e,bold] #[bg=#1e1e2e] {tabs}"
-            // format_right "[fg=#424554,bg=#1e1e2e]::{datetime}"
-            format_space "#[bg=#1e1e2e]"
+            // --- theme-switcher: color aliases (dark) ---
+            color_bg     "#1e1e2e"
+            color_fg     "#9399B2"
+            color_fg_dim "#6C7086"
+            color_accent "#89B4FA"
+            color_warn   "#ffc387"
+            // --- end theme-switcher ---
 
-            mode_normal          "#[bg=#89B4FA] "
-            mode_tmux            "#[bg=#ffc387] "
+            format_left  "{mode}#[fg=$accent,bg=$bg,bold] #[bg=$bg] {tabs}"
+            format_space "#[bg=$bg]"
+
+            mode_normal          "#[bg=$accent] "
+            mode_tmux            "#[bg=$warn] "
             mode_default_to_mode "tmux"
 
-            tab_normal               "#[fg=#6C7086,bg=#1e1e2e] {index} {name} {fullscreen_indicator}{sync_indicator}{floating_indicator}"
-            tab_active               "#[fg=#9399B2,bg=#1e1e2e,bold,italic] {index} {name} {fullscreen_indicator}{sync_indicator}{floating_indicator}"
+            tab_normal               "#[fg=$fg_dim,bg=$bg] {index} {name} {fullscreen_indicator}{sync_indicator}{floating_indicator}"
+            tab_active               "#[fg=$fg,bg=$bg,bold,italic] {index} {name} {fullscreen_indicator}{sync_indicator}{floating_indicator}"
             tab_fullscreen_indicator "□ "
-            tab_sync_indicator       "  "
+            tab_sync_indicator       "  "
             tab_floating_indicator   "󰉈 "
 
-            datetime          "#[fg=#9399B2,bg=#1e1e2e] {format} "
+            datetime          "#[fg=$fg,bg=$bg] {format} "
             datetime_format   "%A, %d %b %Y %H:%M"
             datetime_timezone "Europe/Copenhagen"
-            } 
+            }
         }
     }
 }
