@@ -11,6 +11,7 @@ let
     zellij_config="$HOME/.config/zellij/config.kdl"
     helix_config="$HOME/.config/helix/config.toml"
     layout_file="$HOME/.config/zellij/layouts/custom.kdl"
+    k9s_config="$HOME/Library/Application Support/k9s/config.yaml"
     state_file="$HOME/.cache/theme-switcher/current"
 
     mkdir -p "$(dirname "$state_file")"
@@ -33,6 +34,7 @@ let
       zellij_theme="rose-pine-dawn"
       helix_theme="rose_pine_dawn"
       starship_palette="rose_pine_dawn"
+      k9s_skin="catppuccin-latte"
       zj_bg="#faf4ed"
       zj_fg="#575279"
       zj_fg_dim="#9893a5"
@@ -42,6 +44,7 @@ let
       zellij_theme="catppuccin-mocha-custom"
       helix_theme="catppuccin_mocha"
       starship_palette="catppuccin_mocha"
+      k9s_skin="catppuccin-mocha"
       zj_bg="#1e1e2e"
       zj_fg="#9399B2"
       zj_fg_dim="#6C7086"
@@ -74,6 +77,15 @@ let
     # Starship palette (runtime, no file rewrite needed)
     if command -v starship &>/dev/null; then
       starship config palette "$starship_palette" 2>/dev/null || true
+    fi
+
+    # k9s ui.skin — k9s with `ui.reactive: true` watches its config and
+    # reloads the active skin live. We also force-flip reactive=true on
+    # every run (idempotent) so a stale `reactive: false` doesn't silently
+    # break live theme switching.
+    if [ -f "$k9s_config" ] && [ ! -L "$k9s_config" ]; then
+      sed -i "" -E "s/^([[:space:]]*)skin: .*/\1skin: $k9s_skin/" "$k9s_config"
+      sed -i "" -E "s/^([[:space:]]*)reactive: .*/\1reactive: true/" "$k9s_config"
     fi
 
     printf '%s' "$mode" > "$state_file"

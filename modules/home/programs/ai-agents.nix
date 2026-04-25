@@ -368,6 +368,7 @@ let
       };
       enabledPlugins = {
         "code-simplifier@claude-plugins-official" = true;
+        "codex@openai-codex" = true;
       };
     }
     // lib.optionalAttrs (claudeHooks != { }) {

@@ -42,7 +42,7 @@
         {
           name = "zshdefer";
           src = pkgs.zsh-defer;
-          file = "share/zsh-defer/zsh-defer.zsh";
+          file = "share/zsh-defer/zsh-defer.plugin.zsh";
         }
       ]
       ++ lib.optional config.core-zsh.enableLunar {
@@ -128,14 +128,11 @@
             # k8s plugin manager
             [[ -f $(which krew) ]] || export PATH="$HOME/.krew/bin:$PATH"
 
-            # shuttle
-            [[ ! -f $(which shuttle) ]] || source <(shuttle completion zsh)
-
-            # gitnow 
-            [[ ! -f $(which gitnow) ]] || source <(gitnow init zsh)
-
-            # hamctl
-            [[ ! -f $(which hamctl) ]] || source <(hamctl completion zsh)
+            # Defer completion sourcing past first prompt — each `source <(...)`
+            # spawns the binary and adds 30–80ms to cold shell startup.
+            zsh-defer -c '[[ ! -f $(which shuttle) ]] || source <(shuttle completion zsh)'
+            zsh-defer -c '[[ ! -f $(which gitnow) ]] || source <(gitnow init zsh)'
+            zsh-defer -c '[[ ! -f $(which hamctl) ]] || source <(hamctl completion zsh)'
 
             # Update Zellij pane titles (via OSC title) to "<dirname> (<git-branch>) [root-hash]".
             # This makes pane frames much more informative than "Pane #N".
@@ -174,29 +171,43 @@
             add-zsh-hook precmd _zellij_pane_title_update
 
             # Background watcher: polls macOS appearance every 2s and runs
-            # toggle-theme on change.  One watcher per top-level shell (not
-            # inside Zellij panes, to avoid duplicates).
+            # toggle-theme on change. PID-guarded so only one survives across
+            # all Ghostty windows — `&!` disowns the loop, so without this
+            # guard every new outer shell would leak another watcher.
             if [[ -z "$ZELLIJ" ]] && command -v toggle-theme >/dev/null 2>&1; then
-              (
-                while true; do
-                  toggle-theme 2>/dev/null
-                  sleep 2
-                done
-              ) &!
+              local _theme_pid_file="$HOME/.cache/theme-switcher/watcher.pid"
+              mkdir -p "''${_theme_pid_file:h}"
+
+              local _theme_existing_pid=""
+              [[ -f "$_theme_pid_file" ]] && _theme_existing_pid=$(<"$_theme_pid_file")
+
+              if [[ -z "$_theme_existing_pid" ]] || ! kill -0 "$_theme_existing_pid" 2>/dev/null; then
+                (
+                  while true; do
+                    toggle-theme 2>/dev/null
+                    sleep 2
+                  done
+                ) &!
+                print -r -- "$!" > "$_theme_pid_file"
+              fi
+              unset _theme_pid_file _theme_existing_pid
             fi
 
-            # refresh $GITHUB_ACCESS_TOKEN if unset
-            if [[ $GITHUB_ACCESS_TOKEN == "" ]]; then
-              export GITHUB_ACCESS_TOKEN=$(gh auth token);
-            fi
-
-            if [[ $GITHUB_LUNAR_CI_TOKEN = "" ]]; then
-              export GITHUB_LUNAR_CI_TOKEN=$(gh auth token);
-            fi
-
-            if [[ $GITHUB_TOKEN == "" ]]; then
-              export GITHUB_TOKEN=$(gh auth token);
-            fi
+            # Hydrate GitHub token env vars after first prompt — `gh auth token`
+            # hits the macOS keychain, and we only need to spend that cost
+            # once per shell, not three times. Deferred so cold-shell paint
+            # isn't blocked on it.
+            zsh-defer -c '
+              if [[ -z $GITHUB_TOKEN || -z $GITHUB_ACCESS_TOKEN || -z $GITHUB_LUNAR_CI_TOKEN ]] && command -v gh >/dev/null 2>&1; then
+                local _gh_tok
+                _gh_tok=$(gh auth token 2>/dev/null) || _gh_tok=""
+                if [[ -n $_gh_tok ]]; then
+                  [[ -z $GITHUB_TOKEN ]]         && export GITHUB_TOKEN=$_gh_tok
+                  [[ -z $GITHUB_ACCESS_TOKEN ]]  && export GITHUB_ACCESS_TOKEN=$_gh_tok
+                  [[ -z $GITHUB_LUNAR_CI_TOKEN ]] && export GITHUB_LUNAR_CI_TOKEN=$_gh_tok
+                fi
+              fi
+            '
 
             if [[ -z $SSH_AUTH_SOCK ]] || ! kill -0 $SSH_AGENT_PID 2>/dev/null; then
               eval "$(ssh-agent -s)" >/dev/null
