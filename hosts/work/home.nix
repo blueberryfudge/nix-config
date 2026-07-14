@@ -13,6 +13,8 @@
     monaspace
     nerd-fonts.jetbrains-mono
     nerd-fonts.symbols-only
+    pi-coding-agent
+    herdr
   ];
 
   home.sessionVariables = { };

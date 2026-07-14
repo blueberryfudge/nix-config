@@ -24,7 +24,6 @@
 
       # data tooling
       duckdb # inprocess analytical database
-      dbt # data build tool
       jupyter # notebook environment
 
       # misc

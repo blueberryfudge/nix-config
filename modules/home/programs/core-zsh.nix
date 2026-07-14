@@ -134,42 +134,6 @@
             zsh-defer -c '[[ ! -f $(which gitnow) ]] || source <(gitnow init zsh)'
             zsh-defer -c '[[ ! -f $(which hamctl) ]] || source <(hamctl completion zsh)'
 
-            # Update Zellij pane titles (via OSC title) to "<dirname> (<git-branch>) [root-hash]".
-            # This makes pane frames much more informative than "Pane #N".
-            function _zellij_pane_title_update() {
-              [[ -n "$ZELLIJ" ]] || return
-
-              local dir branch pane_title root session_hash
-              if [[ "$PWD" == "$HOME" ]]; then
-                dir="~"
-              elif [[ "$PWD" == "/" ]]; then
-                dir="/"
-              else
-                dir="''${PWD##*/}"
-              fi
-
-              root="$PWD"
-              if command -v git >/dev/null 2>&1; then
-                root="$(git rev-parse --show-toplevel 2>/dev/null || print -r -- "$PWD")"
-                if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-                  branch="$(git symbolic-ref --quiet --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)"
-                fi
-              fi
-              session_hash="$(print -rn -- "$root" | shasum | cut -c1-6)"
-
-              pane_title="$dir"
-              if [[ -n "$branch" ]]; then
-                pane_title="$dir ($branch)"
-              fi
-              pane_title="$pane_title [$session_hash]"
-
-              printf '\e]2;%s\a' "$pane_title"
-            }
-
-            autoload -Uz add-zsh-hook
-            add-zsh-hook chpwd _zellij_pane_title_update
-            add-zsh-hook precmd _zellij_pane_title_update
-
             # Background watcher: polls macOS appearance every 2s and runs
             # toggle-theme on change. PID-guarded so only one survives across
             # all Ghostty windows — `&!` disowns the loop, so without this
@@ -220,10 +184,45 @@
             # Lunar-specific environment variables
             export LUNARCTL_REGISTRY="git=git@github.com:lunarway/lunarctl-registry.git"
           '';
+
+          zshViMode = lib.mkOrder 1100 ''
+            # --- Vi mode: highlight/edit the command line with vim motions ---
+            # Esc -> normal mode. `v` starts a visual selection; w/e/b/0/$/f
+            # extend the highlight; `y` yanks (also to the macOS clipboard),
+            # `d`/`c`/`x` cut, `p` pastes.
+            bindkey -v
+            export KEYTIMEOUT=1
+
+            # Ctrl-V in normal mode opens the current command in $EDITOR (helix).
+            autoload -Uz edit-command-line
+            zle -N edit-command-line
+            bindkey -M vicmd '^v' edit-command-line
+
+            # In visual mode, also send the yanked selection to the clipboard.
+            function _zsh_visual_yank_pbcopy {
+              zle vi-yank
+              printf '%s' "$CUTBUFFER" | pbcopy
+            }
+            zle -N _zsh_visual_yank_pbcopy
+            bindkey -M visual 'y' _zsh_visual_yank_pbcopy
+
+            # Cursor shape: block in normal mode, beam in insert mode.
+            autoload -Uz add-zle-hook-widget
+            function _zsh_vi_cursor_keymap {
+              case $KEYMAP in
+                vicmd) printf '\e[2 q' ;;
+                *)     printf '\e[6 q' ;;
+              esac
+            }
+            function _zsh_vi_cursor_init { printf '\e[6 q' }
+            add-zle-hook-widget keymap-select _zsh_vi_cursor_keymap
+            add-zle-hook-widget line-init _zsh_vi_cursor_init
+          '';
         in
         lib.mkMerge [
           zshConfigEarlyInit
           zshConfig
+          zshViMode
         ];
     };
 
