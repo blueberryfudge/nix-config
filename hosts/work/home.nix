@@ -33,6 +33,7 @@
 
   # optional modules
   ai-agents.enable = true;
+  ai-agents.enableHerdr = true;
   cli-tooling.enable = true;
   devops-tooling.enable = true;
   matrix-tooling.enable = true;

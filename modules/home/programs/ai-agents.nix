@@ -371,14 +371,57 @@ let
         "codex@openai-codex" = true;
       };
     }
-    // lib.optionalAttrs (claudeHooks != { }) {
-      hooks = claudeHooks;
+    // lib.optionalAttrs (claudeHooksWithHerdr != { }) {
+      hooks = claudeHooksWithHerdr;
     };
 
   cursorHooks = {
     version = 1;
     hooks = cursorHookConfig;
   };
+
+  # Herdr session-identity hooks. Herdr's own `integration install` command
+  # cannot be used for Claude/Cursor because it rewrites settings.json /
+  # hooks.json in place, and this module renders those as read-only Nix-store
+  # symlinks. Instead we vendor Herdr's hook scripts verbatim (the
+  # HERDR_INTEGRATION_VERSION markers let `herdr integration status` recognise
+  # them) and merge Herdr's hook entries into the JSON we already generate.
+  # Re-extract the scripts (run `herdr integration install {claude,cursor}` in a
+  # scratch HOME) whenever the pinned Herdr version bumps the hook version.
+  herdrClaudeHookGroup = {
+    matcher = "*";
+    hooks = [
+      {
+        type = "command";
+        command = "bash \"$HOME/.claude/hooks/herdr-agent-state.sh\" session";
+        timeout = 10;
+      }
+    ];
+  };
+
+  herdrCursorHookEntry = {
+    command = "bash \"$HOME/.cursor/herdr-agent-state.sh\" session";
+  };
+
+  claudeHooksWithHerdr =
+    if cfg.enableHerdr then
+      claudeHooks
+      // {
+        SessionStart = (claudeHooks.SessionStart or [ ]) ++ [ herdrClaudeHookGroup ];
+      }
+    else
+      claudeHooks;
+
+  cursorHooksWithHerdr =
+    if cfg.enableHerdr then
+      cursorHooks
+      // {
+        hooks = cursorHookConfig // {
+          sessionStart = (cursorHookConfig.sessionStart or [ ]) ++ [ herdrCursorHookEntry ];
+        };
+      }
+    else
+      cursorHooks;
 in
 {
   options.ai-agents = {
@@ -395,6 +438,18 @@ in
       default = true;
       description = "Install shared agents and skills into ~/.cursor.";
     };
+
+    enableHerdr = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        Wire Herdr session-identity integrations for Claude, Cursor, Codex and
+        Pi. Claude and Cursor are wired declaratively (vendored hook scripts +
+        merged settings). Codex and Pi live outside this module's file
+        management, so they are installed with `herdr integration install`
+        during home-manager activation. Requires the `herdr` CLI on PATH.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -407,6 +462,9 @@ in
           ".claude/CLAUDE.md".source = dataPath "CLAUDE.md";
           ".claude/settings.json".text = builtins.toJSON claudeSettings + "\n";
         }
+        // lib.optionalAttrs cfg.enableHerdr {
+          ".claude/hooks/herdr-agent-state.sh".source = dataPath "defs/herdr/claude-agent-state.sh";
+        }
       )
       // lib.optionalAttrs cfg.enableCursor (
         mkAgentEntries "cursor" ".cursor"
@@ -414,8 +472,25 @@ in
         // mkHookScriptEntries "cursor" ".cursor"
         // mkRuleEntries ".cursor"
         // {
-          ".cursor/hooks.json".text = builtins.toJSON cursorHooks + "\n";
+          ".cursor/hooks.json".text = builtins.toJSON cursorHooksWithHerdr + "\n";
+        }
+        // lib.optionalAttrs cfg.enableHerdr {
+          ".cursor/herdr-agent-state.sh".source = dataPath "defs/herdr/cursor-agent-state.sh";
         }
       );
+
+    # Codex and Pi keep their config outside this module's file management, so
+    # Herdr's own installer can safely write them. It is idempotent, so running
+    # it on every activation just re-asserts the current pinned integration.
+    home.activation = lib.mkIf cfg.enableHerdr {
+      herdrIntegrations = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        herdr_bin="${pkgs.herdr}/bin/herdr"
+        if [ -x "$herdr_bin" ]; then
+          $DRY_RUN_CMD mkdir -p "$HOME/.pi/agent/extensions"
+          $DRY_RUN_CMD "$herdr_bin" integration install pi || true
+          $DRY_RUN_CMD "$herdr_bin" integration install codex || true
+        fi
+      '';
+    };
   };
 }

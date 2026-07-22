@@ -206,15 +206,19 @@
             zle -N _zsh_visual_yank_pbcopy
             bindkey -M visual 'y' _zsh_visual_yank_pbcopy
 
-            # Cursor shape: block in normal mode, beam in insert mode.
+            # Cursor: steady block (\e[2 q) in both modes — the block shape and
+            # the regular yellow colour come from Ghostty's cursor-style /
+            # cursor-color. zsh only overrides the colour for vim (normal/vicmd)
+            # mode via OSC 12 (red #f38ba8), and resets to Ghostty's default via
+            # OSC 112 on insert. Ghostty and Herdr both honour these sequences.
             autoload -Uz add-zle-hook-widget
             function _zsh_vi_cursor_keymap {
               case $KEYMAP in
-                vicmd) printf '\e[2 q' ;;
-                *)     printf '\e[6 q' ;;
+                vicmd) printf '\e[2 q\e]12;#f38ba8\a' ;;
+                *)     printf '\e[2 q\e]112\a' ;;
               esac
             }
-            function _zsh_vi_cursor_init { printf '\e[6 q' }
+            function _zsh_vi_cursor_init { printf '\e[2 q\e]112\a' }
             add-zle-hook-widget keymap-select _zsh_vi_cursor_keymap
             add-zle-hook-widget line-init _zsh_vi_cursor_init
           '';

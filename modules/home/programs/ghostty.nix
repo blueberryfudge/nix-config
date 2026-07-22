@@ -60,7 +60,7 @@ in
       theme = light:Rose Pine Dawn,dark:${config.ghostty.theme}
 
       cursor-style = block
-      cursor-color = #727af4
+      cursor-color = #f9e2af
 
       window-padding-x = 5
       window-padding-y = 5
