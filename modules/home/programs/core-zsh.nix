@@ -20,10 +20,8 @@
 
   config = lib.mkIf config.core-zsh.enable {
     home.packages = [
-      pkgs.starship
       pkgs.lazygit
       pkgs.yazi
-      pkgs.zellij
       pkgs.eza
       pkgs.bat
       pkgs.wget

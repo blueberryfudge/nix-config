@@ -23,7 +23,6 @@ let
   agentDefs = {
     code-architect = import (dataPath "defs/agents/code-architect.nix");
     code-engineer = import (dataPath "defs/agents/code-engineer.nix");
-    code-documenter = import (dataPath "defs/agents/code-documenter.nix");
     code-reviewer = import (dataPath "defs/agents/code-reviewer.nix");
     code-security = import (dataPath "defs/agents/code-security.nix");
     code-searcher = import (dataPath "defs/agents/code-searcher.nix");
@@ -37,9 +36,46 @@ let
     specialist-routing = import (dataPath "defs/skills/specialist-routing.nix");
   };
 
+  # Single source of truth for guarded shell commands. Both Claude's permission
+  # lists (below) and the shell-guard hook (which also covers Cursor, Codex and
+  # Pi, none of which have Claude's permission system) derive from these.
+  guardedNetwork = [
+    "curl"
+    "wget"
+    "nc"
+    "ncat"
+    "ssh"
+    "scp"
+    "rsync"
+  ];
+
+  guardedDestructive = [
+    { perm = "Bash(rm -rf *)"; regex = "rm[[:space:]]+-rf([[:space:]]|$)"; }
+    { perm = "Bash(git reset --hard *)"; regex = "git[[:space:]]+reset[[:space:]]+--hard([[:space:]]|$)"; }
+    { perm = "Bash(git clean -fd *)"; regex = "git[[:space:]]+clean[[:space:]]+-fd[a-zA-Z-]*([[:space:]]|$)"; }
+  ];
+
+  # Extra hard-denies that apply ONLY to cartel sicarios (autonomous worker
+  # agents tagged with $CARTEL_SICARIO), on top of guardedDestructive. Your own
+  # interactive sessions are unaffected - you can still merge/rebase/force-push.
+  # Plain `git push` is deliberately NOT here, so worktree sicarios can land their
+  # branches/PRs; only history-rewriting / irreversible git ops are blocked.
+  guardedSicarioExtra = [
+    { regex = "git[[:space:]]+push([[:space:]].*)?[[:space:]](-f|--force|--force-with-lease)([[:space:]]|=|$)"; }
+    { regex = "git[[:space:]]+merge([[:space:]]|$)"; }
+    { regex = "git[[:space:]]+rebase([[:space:]]|$)"; }
+    { regex = "git[[:space:]]+branch[[:space:]]+(-[dD]|--delete)[[:space:]]+(main|master)([[:space:]]|$)"; }
+  ];
+
   hookDefs = {
-    shell-guard = import (dataPath "defs/hooks/shell-guard.nix") { inherit pkgs; };
+    shell-guard = import (dataPath "defs/hooks/shell-guard.nix") {
+      inherit pkgs;
+      destructiveRegexes = map (d: d.regex) guardedDestructive;
+      sicarioDenyRegexes = map (d: d.regex) guardedSicarioExtra;
+      networkTokens = guardedNetwork;
+    };
     session-context = import (dataPath "defs/hooks/session-context.nix") { inherit pkgs; };
+    pre-compact = import (dataPath "defs/hooks/pre-compact.nix") { inherit pkgs; };
   };
 
   ruleDefs = {
@@ -69,24 +105,14 @@ let
       "Bash(nix build *)"
       "Bash(nix flake check *)"
     ];
-    ask = [
-      "Bash(curl *)"
-      "Bash(wget *)"
-      "Bash(nc *)"
-      "Bash(ncat *)"
-      "Bash(ssh *)"
-      "Bash(scp *)"
-      "Bash(rsync *)"
+    ask = (map (t: "Bash(${t} *)") guardedNetwork) ++ [
       "Bash(git push *)"
       "Bash(but push *)"
       "Bash(nix flake update *)"
       "Bash(home-manager switch *)"
       "Bash(darwin-rebuild switch *)"
     ];
-    deny = [
-      "Bash(rm -rf *)"
-      "Bash(git reset --hard *)"
-      "Bash(git clean -fd*)"
+    deny = (map (d: d.perm) guardedDestructive) ++ [
       "Read(./secrets/**)"
       "Read(./**/*.age)"
       "Read(./**/.env*)"
@@ -202,6 +228,47 @@ let
         text = renderCursorRule name rule;
       }
     ) ruleDefs;
+
+  # Shared AGENTS.md source, consumed by Claude (as CLAUDE.md), the Cursor
+  # shared-defaults rule, Codex (~/.codex/AGENTS.md) and Pi (~/.pi/agent/AGENTS.md).
+  agentsMd = dataPath "AGENTS.md";
+
+  # Codex and Pi have no subagents, so each specialist persona is exposed as an
+  # ordinary invokable skill (its prompt becomes the skill body).
+  renderAgentAsSkill =
+    name: agent:
+    ''
+      ${renderFrontmatter {
+        inherit name;
+        description = agent.description;
+      }}
+      ${agent.prompt}
+    '';
+
+  # Skills that make sense outside Claude/Cursor. `session-resume` reads
+  # ~/.claude paths, `specialist-routing` describes Claude/Cursor subagent
+  # dispatch, and `skill-creator` is shipped by Codex itself (under
+  # ~/.codex/skills/.system) — so none are shared to Codex/Pi.
+  sharedSkillDefs = removeAttrs skillDefs [
+    "session-resume"
+    "specialist-routing"
+    "skill-creator"
+  ];
+
+  sharedSkillTexts =
+    (lib.mapAttrs (name: agent: renderAgentAsSkill name agent) agentDefs)
+    // (lib.mapAttrs (name: skill: renderSkill "agents" name skill) sharedSkillDefs);
+
+  # Codex and Pi discover skills by scanning ~/.agents/skills for real SKILL.md
+  # files and skip symlinks — but home.file only creates symlinks. So assemble
+  # the generated skills into a store directory here and copy them in as real
+  # files via the seedAgentSkills activation script below.
+  sharedSkillsDir = pkgs.symlinkJoin {
+    name = "agent-skills";
+    paths = lib.mapAttrsToList (
+      name: text: pkgs.writeTextDir "${name}/SKILL.md" text
+    ) sharedSkillTexts;
+  };
 
   hookFileName = name: hook: hook.fileName or "${name}.sh";
 
@@ -439,6 +506,26 @@ in
       description = "Install shared agents and skills into ~/.cursor.";
     };
 
+    enableCodex = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        Install the shared AGENTS.md into ~/.codex and shared skills into
+        ~/.agents/skills. Codex has no subagents, so specialists are exposed as
+        invokable skills.
+      '';
+    };
+
+    enablePi = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        Install the shared AGENTS.md into ~/.pi/agent and shared skills into
+        ~/.agents/skills. Pi has no subagents, so specialists are exposed as
+        invokable skills.
+      '';
+    };
+
     enableHerdr = lib.mkOption {
       type = lib.types.bool;
       default = false;
@@ -459,7 +546,7 @@ in
         // mkSkillEntries "claude" ".claude"
         // mkHookScriptEntries "claude" ".claude"
         // {
-          ".claude/CLAUDE.md".source = dataPath "CLAUDE.md";
+          ".claude/CLAUDE.md".source = agentsMd;
           ".claude/settings.json".text = builtins.toJSON claudeSettings + "\n";
         }
         // lib.optionalAttrs cfg.enableHerdr {
@@ -477,20 +564,47 @@ in
         // lib.optionalAttrs cfg.enableHerdr {
           ".cursor/herdr-agent-state.sh".source = dataPath "defs/herdr/cursor-agent-state.sh";
         }
+      )
+      // lib.optionalAttrs cfg.enableCodex {
+        ".codex/AGENTS.md".source = agentsMd;
+      }
+      // lib.optionalAttrs cfg.enablePi {
+        ".pi/agent/AGENTS.md".source = agentsMd;
+      };
+
+    home.activation = {
+      # Codex and Pi discover skills from ~/.agents/skills but skip symlinked
+      # SKILL.md files, which is all home.file can produce. Copy the generated
+      # skills in as real files (same seed pattern used for helix/zellij here).
+      # Only our own skill names are replaced; other skills in the dir (e.g.
+      # agent-catalog) are left untouched.
+      seedAgentSkills = lib.mkIf (cfg.enableCodex || cfg.enablePi) (
+        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          dest="$HOME/.agents/skills"
+          $DRY_RUN_CMD mkdir -p "$dest"
+          for src in ${sharedSkillsDir}/*/; do
+            name="$(basename "$src")"
+            $DRY_RUN_CMD rm -rf "$dest/$name"
+            $DRY_RUN_CMD cp -RL "$src" "$dest/$name"
+            $DRY_RUN_CMD chmod -R u+w "$dest/$name"
+          done
+        ''
       );
 
-    # Codex and Pi keep their config outside this module's file management, so
-    # Herdr's own installer can safely write them. It is idempotent, so running
-    # it on every activation just re-asserts the current pinned integration.
-    home.activation = lib.mkIf cfg.enableHerdr {
-      herdrIntegrations = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        herdr_bin="${pkgs.herdr}/bin/herdr"
-        if [ -x "$herdr_bin" ]; then
-          $DRY_RUN_CMD mkdir -p "$HOME/.pi/agent/extensions"
-          $DRY_RUN_CMD "$herdr_bin" integration install pi || true
-          $DRY_RUN_CMD "$herdr_bin" integration install codex || true
-        fi
-      '';
+      # Codex and Pi keep their Herdr config outside this module's file
+      # management, so Herdr's own installer can safely write them. It is
+      # idempotent, so running it on every activation just re-asserts the
+      # current pinned integration.
+      herdrIntegrations = lib.mkIf cfg.enableHerdr (
+        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          herdr_bin="${pkgs.herdr}/bin/herdr"
+          if [ -x "$herdr_bin" ]; then
+            $DRY_RUN_CMD mkdir -p "$HOME/.pi/agent/extensions"
+            $DRY_RUN_CMD "$herdr_bin" integration install pi || true
+            $DRY_RUN_CMD "$herdr_bin" integration install codex || true
+          fi
+        ''
+      );
     };
   };
 }

@@ -13,11 +13,7 @@
     1. **Inspect changes**: Run `git status` and `git diff` (staged and unstaged) to understand what changed.
     2. **Stage selectively**: Add only the relevant files. Never stage `.env`, secrets, or large binaries unless the user explicitly named them.
     3. **Write the message**: Follow the existing commit style in `git log --oneline -10`. If no clear style, use a short imperative subject line (≤72 chars). Add a body paragraph when the *why* isn't obvious from the diff.
-    4. **Add co-author line**: Always append to the commit body:
-       ```
-       Co-Authored-By: Claude <noreply@anthropic.com>
-       ```
-    5. **Commit**: Use a heredoc to pass the message — avoids shell escaping issues:
+    4. **Commit**: Use a heredoc to pass the message — avoids shell escaping issues:
        ```bash
        git commit -m "$(cat <<'EOF'
        Subject line here
@@ -28,7 +24,7 @@
        EOF
        )"
        ```
-    6. **Verify**: Run `git log -1 --stat` to confirm the commit looks right.
+    5. **Verify**: Run `git log -1 --stat` to confirm the commit looks right.
 
     ## Rules
 
