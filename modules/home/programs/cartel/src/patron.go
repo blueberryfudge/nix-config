@@ -237,7 +237,7 @@ func cmdLookout(args []string) {
 	}
 
 	fmt.Println("cartel lookout: event stream live (instant).")
-	streamTransitions(ctx, handle)
+	streamTransitions(ctx, handle, func(bool) {}) // foreground watcher has no poll backstop to gate
 }
 
 func appendFile(path, s string) {

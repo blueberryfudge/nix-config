@@ -148,6 +148,15 @@ func serveConn(ctx context.Context, nc net.Conn, bad map[string]bool, emit func(
 		if json.NewEncoder(nc).Encode(&req) != nil {
 			return
 		}
+		// Reconcile ONCE per (re)connection: a settle that happened before we
+		// subscribed - or during a stream gap - won't arrive as an event, so read
+		// each pane's status a single time to catch it. This is the only place the
+		// stream `agent get`s a sicario, so a healthy connection = zero timer polls.
+		for _, p := range reqPanes {
+			if id := p2id[p]; id != "" {
+				emit(id, agentStatus(id))
+			}
+		}
 	}
 
 	// Close the conn when the good-pane set changes (recruit/bury/quarantine) so
@@ -206,9 +215,13 @@ func serveConn(ctx context.Context, nc net.Conn, bad map[string]bool, emit func(
 // transition, until ctx is cancelled. Unlike the old standalone binary it never
 // "gives up": the daemon pairs this with a polling backstop, so a persistent
 // herdr outage degrades to polling without ever abandoning event mode.
-func streamTransitions(ctx context.Context, emit func(id, status string)) {
+// setConnected is called with true while a subscription is live and false while
+// the stream is down, so the daemon can suppress its polling backstop (and the
+// per-tick sicario repaints it causes) whenever the event stream is healthy.
+func streamTransitions(ctx context.Context, emit func(id, status string), setConnected func(bool)) {
 	bad := map[string]bool{}
 	backoff := backoffStart
+	setConnected(false)
 	for {
 		if ctx.Err() != nil {
 			return
@@ -229,7 +242,9 @@ func streamTransitions(ctx context.Context, emit func(id, status string)) {
 			backoff = nextBackoff(backoff)
 			continue
 		}
+		setConnected(true)
 		serveConn(ctx, nc, bad, emit)
+		setConnected(false)
 		nc.Close()
 		backoff = backoffStart
 		if sleepCtx(ctx, backoffStart) {

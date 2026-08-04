@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 )
@@ -36,6 +37,12 @@ type daemon struct {
 	panes           map[string]*paneState
 	version         string
 	lastNonEmpty    time.Time
+	// connected is true while the herdr event stream is live. When true the
+	// daemon is PURELY event-driven and never polls sicario panes (see tick):
+	// an `agent get` capture on a streaming TUI forces a repaint, which used to
+	// flood watched sicario panes with duplicated frames. It is only false during
+	// an actual herdr outage, when the poll backstop takes over.
+	connected atomic.Bool
 }
 
 func newDaemon() *daemon {
@@ -121,11 +128,15 @@ func (d *daemon) register(paneID string) {
 // tick runs the poll backstop, delivers due reports, prunes dead panes, and
 // returns true when the daemon should exit (idle).
 func (d *daemon) tick() bool {
-	// Poll backstop: if the event stream ever missed a transition, catch it here.
-	// (observe is idempotent for idle/done via replyResolve, so re-observing an
-	// already-reported settle every tick is a cheap no-op.)
-	for _, s := range listSicarios() {
-		d.observe(s.ID, agentStatus(s.ID))
+	// Poll backstop - ONLY while the event stream is down. When it is up we are
+	// purely event-driven (like the pre-daemon lookout) and never `agent get` a
+	// sicario on a timer, so a working sicario's TUI is no longer force-repainted
+	// every tick. Reconnects reconcile any transition missed during the gap
+	// (serveConn), and observe is idempotent for idle/done via replyResolve.
+	if !d.connected.Load() {
+		for _, s := range listSicarios() {
+			d.observe(s.ID, agentStatus(s.ID))
+		}
 	}
 
 	// Snapshot the panes + their pending ids under lock, then do the slow herdr
@@ -300,7 +311,7 @@ func cmdDaemon(_ []string) {
 
 	d := newDaemon()
 	d.baseline()
-	go streamTransitions(ctx, d.observe)
+	go streamTransitions(ctx, d.observe, d.connected.Store)
 	go d.tickLoop(ctx, cancel)
 
 	for {
