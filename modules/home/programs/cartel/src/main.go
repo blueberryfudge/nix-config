@@ -41,6 +41,8 @@ func main() {
 		cmdStatus(args)
 	case "wire", "log":
 		cmdWire(args)
+	case "report":
+		cmdReport(args)
 	case "order", "say":
 		cmdOrder(args)
 	case "await":
