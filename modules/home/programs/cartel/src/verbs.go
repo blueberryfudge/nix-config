@@ -293,6 +293,14 @@ func cmdRecruit(args []string) {
 	// sicario boots already working on it, skipping the readiness poll + Enter
 	// dance. The report contract rides along; persisted state keeps the bare brief.
 	if brief != "" {
+		if kind == "claude" {
+			// claude's --add-dir/--allowedTools are VARIADIC (<dirs...>): without an
+			// explicit end-of-options separator they swallow the trailing brief as
+			// just another flag value, and the sicario boots IDLE with no prompt.
+			// The commander-style "--" closes option parsing (verified against the
+			// real CLI), so the brief always lands as the initial prompt.
+			startcmd = append(startcmd, "--")
+		}
 		startcmd = append(startcmd, brief+reportContract(id))
 	}
 	started, err := herdrOut(startcmd...)
