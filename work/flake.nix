@@ -40,10 +40,10 @@
       # run the build once, copy the "got: sha256-..." value from the error.
       pi-coding-agent = up.buildNpmPackage rec {
         pname = "pi-coding-agent";
-        version = "0.80.6";
+        version = "0.84.4";
         src = up.fetchurl {
           url = "https://registry.npmjs.org/@earendil-works/pi-coding-agent/-/pi-coding-agent-${version}.tgz";
-          hash = "sha512-vcfD6tOk402isLl3Cm/qbn2O10TvgroMp1+/fEGM24ZdvETFCdOYv5VZ7m59EI5fPsjfSJh+CpQ5bhBrhfOg7g==";
+          hash = "sha512-jmOlrqUmvhh/siNWFRXjYLJzhKFIHNsAQaysRwzQPQFnPAaV/vhqHsLH/MBsIISA1Rjj7WTUFR3nJrpXoLx39w==";
         };
         # pi's shrinkwrap omits `integrity` for its own sibling packages, which
         # makes prefetch-npm-deps panic ("non-git dependencies should have
@@ -54,9 +54,12 @@
           addIntegrity() {
             sed -i "s|\(\"resolved\": \"https://registry.npmjs.org/@earendil-works/$1/-/$1-${version}.tgz\",\)|\1\n          \"integrity\": \"$2\",|" npm-shrinkwrap.json
           }
-          addIntegrity pi-agent-core "sha512-Lvn89ko42h5ETUb6Z0Ku6ldskEqXaTdQBYvSa0+7bdG9V6rUEpXptv5e0OVZ1HDcvi8s6/2lGCQWsxKX+DFHNw=="
-          addIntegrity pi-ai "sha512-7xfLk8sANBp+bpPEbjoOZTbPxsa+++b1JXAoSJsNa3vbs9AHHEclmvg54XLQcxH+fuwaeti/g2jeIfJ+mVYLpA=="
-          addIntegrity pi-tui "sha512-bSuzS4EVSqEPj/Qr/p9eqCESfKsGuDNbl77EGci8Iaqqt/C/XCBZL1MjXaxSWW1NsT5afjp/Cb0NTPzOLv/aPA=="
+          addIntegrity pi-agent-core "sha512-HyUnjaOXj6oN/6SNcr8A1J/ElRQA50FtIE0XUTSKAQVqmdlb9qdojOyUQwF/jULE5+yOEtGuVgi/N1RnBiNG+g=="
+          addIntegrity pi-ai "sha512-AClAZxf5+c4RRu44NJPS6wyQy+Nmq+Mzyyrdvm4ZVMNuixelO02RZX4G4Aq1F145Yzp43wnM5S+hLlSI7ypfVw=="
+          addIntegrity pi-client "sha512-q398WY/3ZQHTizk7IKxApzqFV0xt4yM9LkSkwyqeLK5Bj5RwRjOWxESt26z4LgNp4O+8hqhqFPf/8fj4H5rE4A=="
+          addIntegrity pi-protocol "sha512-acyE9ozxkMiWiz/xyWpU0O9vwnYv0hyG889Vniv6Sg9c9zfsX+8MePnDNphBacY2Fvm1rxdsGmiVDSZl9yuDFA=="
+          addIntegrity pi-telemetry "sha512-8e2CuxM+ht+hedQXTZmi5JVl6/xDK9RpSDL2+MbITevKYQhMZ/z6lJOTFgox3HQyGxO8mOZEtYGVeQNaD4OzqA=="
+          addIntegrity pi-tui "sha512-nPUnwDkLtupPXnZQYrCwPFcuTydCDqTY6ZbFqhsL4S4kVq0AT418kPa/6uXwtaCD+MjBNBltb7ScTYX65yeE1w=="
           cp npm-shrinkwrap.json package-lock.json
 
           # Upstream ships a production-only shrinkwrap (no dev deps), but
@@ -67,7 +70,7 @@
           # them. package.json is tab-indented.
           sed -i '/^\t"devDependencies": {/,/^\t},/d' package.json
         '';
-        npmDepsHash = "sha256-/2e8KD74cIKr1R6sLPoPevHByxIJFAfVuVgbf18b8WA=";
+        npmDepsHash = "sha256-TMCFuLn2EbzAPrTN0XGZoJj7sHNqMA77YNFCRcU0JWI=";
         dontNpmBuild = true;           # dist/ is prebuilt in the tarball
         npmFlags = [ "--ignore-scripts" ];
         nodejs = up.nodejs_22;         # pi requires node >= 22.19
