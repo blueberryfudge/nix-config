@@ -14,7 +14,6 @@
     # development tools
     home.packages = with pkgs; [
       # cli tools
-      lazygit # tui git client
       yq # cli yaml processor
       jq # cli json processor
       curl # cli http client

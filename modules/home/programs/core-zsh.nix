@@ -20,10 +20,8 @@
 
   config = lib.mkIf config.core-zsh.enable {
     home.packages = [
-      pkgs.starship
       pkgs.lazygit
       pkgs.yazi
-      pkgs.zellij
       pkgs.eza
       pkgs.bat
       pkgs.wget
@@ -57,7 +55,6 @@
         lg = "lazygit";
         nu = "pushd ${nixDirectory} && nix flake update && popd";
         ns = "pushd ${nixDirectory} && sudo darwin-rebuild switch --flake .#aarch64-darwin && popd"; # ← Fixed command
-        gn = "gitnow";
         "docker-compose" = "docker compose";
         }
         # Lunar-specific aliases (only if enabled)
@@ -131,8 +128,23 @@
             # Defer completion sourcing past first prompt — each `source <(...)`
             # spawns the binary and adds 30–80ms to cold shell startup.
             zsh-defer -c '[[ ! -f $(which shuttle) ]] || source <(shuttle completion zsh)'
-            zsh-defer -c '[[ ! -f $(which gitnow) ]] || source <(gitnow init zsh)'
             zsh-defer -c '[[ ! -f $(which hamctl) ]] || source <(hamctl completion zsh)'
+
+            # gitnow: clone/jump to a repo WITHOUT letting gitnow spawn a nested
+            # interactive shell in it. gitnow's default behaviour is to fork a
+            # fresh $SHELL in the target repo, which re-runs this entire init
+            # (brew/nix env, gh keychain, completions, theme setup) and costs a
+            # few seconds of prompt lag per jump. `--no-shell` makes gitnow print
+            # the path instead, so we cd in-place. We deliberately skip gitnow's
+            # own `gitnow init zsh` integration: its function is shadowed by the
+            # old `gn` alias and uses GNU-only `tail --lines 1` (broken on macOS).
+            if command -v gitnow >/dev/null 2>&1; then
+              function gn {
+                local _gn_dir
+                _gn_dir=$(gitnow --no-shell "$@") || return
+                [[ -n $_gn_dir ]] && cd "''${_gn_dir##*$'\n'}"
+              }
+            fi
 
             # Background watcher: polls macOS appearance every 2s and runs
             # toggle-theme on change. PID-guarded so only one survives across

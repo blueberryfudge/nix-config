@@ -16,27 +16,6 @@ let
     enableRosetta = true;
     mutableTaps = true;
     autoMigrate = true;
-
-
-    # Note: if we want nix managed taps
-    # taps = {
-    #   "homebrew/core" = inputs.homebrew-core;
-    #   "homebrew/cask" = inputs.homebrew-cask;
-    #   "homebrew/bundle" = inputs.homebrew-bundle;
-    # };
-    # NOTE: below taps needed as flake inputs if using taps above
-    # homebrew-bundle = {
-    #   url = "github:homebrew/homebrew-bundle";
-    #   flake = false;
-    # };
-    # homebrew-core = {
-    #   url = "github:homebrew/homebrew-core";
-    #   flake = false;
-    # };
-    # homebrew-cask = {
-    #   url = "github:homebrew/homebrew-cask";
-    #   flake = false;
-    # };
   };
 
   homebrew = {
@@ -58,14 +37,5 @@ let
 
     
     brews= pkgs.callPackage brewsPath { };
-
-    # mas = mac app store
-    # https://github.com/mas-cli/mas
-    #
-    # $ nix shell nixpkgs#mas
-    # $ mas search <app name>
-    # masApps = {
-    #   "xcode" = 497799835;
-    # };
   };
 }

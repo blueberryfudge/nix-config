@@ -13,9 +13,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
-    flake-utils.url = "github:numtide/flake-utils";
-    helix.url = "github:helix-editor/helix";
-    ghostty.url = "github:ghostty-org/ghostty";
   };
 
   outputs =
@@ -25,10 +22,7 @@
       darwin,
       home-manager,
       nix-homebrew,
-      flake-utils,
       determinate,
-      helix,
-      ghostty,
       ...
     }:
     {
@@ -41,7 +35,6 @@
           extraOverlays ? [],
           gitConfig ? {},
           nixDirectory ? "~/.config/nix-config",
-          enableHomeBrew ? false,
         }:
         let
           overlays = extraOverlays;
@@ -71,7 +64,6 @@
         user = "x";
         homeModule = ./hosts/personal/home.nix;
         hostModule = ./hosts/personal;
-        enableHomeBrew = true;
         gitConfig = {
           userName = "x";
           userEmail = "edvard.bgs@gmail.com";

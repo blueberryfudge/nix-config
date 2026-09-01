@@ -1,0 +1,2 @@
+# Local `go build` artifact (the binary is produced by nix via buildGoModule).
+/cartel

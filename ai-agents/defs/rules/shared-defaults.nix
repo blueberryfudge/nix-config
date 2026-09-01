@@ -3,5 +3,5 @@
   frontmatter = {
     alwaysApply = true;
   };
-  content = builtins.readFile ../../CLAUDE.md;
+  content = builtins.readFile ../../AGENTS.md;
 }

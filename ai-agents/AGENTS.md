@@ -1,6 +1,8 @@
 # Personal Defaults
 
-- Use the specialist subagents when they clearly fit the task:
+- Use the specialist agents when they clearly fit the task. On Claude and Cursor
+  they run as subagents; on Codex and Pi the same personas are available as
+  invokable skills (e.g. `$code-engineer`).
   - `code-engineer` for feature work, bug fixes, refactors, config changes, and tests once the path is clear enough to execute.
   - `code-searcher` for codebase discovery and fast tracing.
   - `code-architect` before large or ambiguous changes.
