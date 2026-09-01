@@ -70,8 +70,11 @@ func cmdPatron(args []string) {
 	switch kind {
 	case "claude":
 		// Auto-approve ONLY the `cartel` command (scoped, not a blanket skip); the
-		// instructions ride the invisible system prompt + CLAUDE.md.
+		// instructions ride the invisible system prompt + CLAUDE.md. Fullscreen
+		// keeps Claude's redraws in the alternate screen instead of baking them
+		// into Herdr's terminal scrollback.
 		execAgent("claude",
+			"--settings", claudeFullscreenSettings,
 			"--add-dir", target,
 			"--allowedTools", "Bash(cartel:*),Bash(cartel *)",
 			"--append-system-prompt", instr)
@@ -262,7 +265,6 @@ USAGE
   cartel recruit <id> --kind <cursor|claude> [options] [-- <extra agent args>]
   cartel roster [--json]
   cartel status [<id>] [--json]
-  cartel report <id> [--path]        # print the sicario's report file (the deliverable; survives bury)
   cartel wire <id> [-n <lines>]
   cartel order <id> <text...>
   cartel await <id> [--timeout <s>] [-n <lines>]   # block until it replies, print reply

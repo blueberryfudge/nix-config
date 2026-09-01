@@ -24,6 +24,30 @@ func kindExec(kind string) (string, bool) {
 	return "", false
 }
 
+func hasOption(args []string, name string) bool {
+	for _, arg := range args {
+		if arg == name || strings.HasPrefix(arg, name+"=") {
+			return true
+		}
+	}
+	return false
+}
+
+// claudeFullscreenSettings forces Claude's flicker-free alt-screen renderer
+// (equivalent to CLAUDE_CODE_NO_FLICKER=1). Claude's default line renderer
+// redraws already-emitted rows, which Herdr can splice into terminal scrollback
+// on focus/resize and permanently duplicate. Fullscreen confines redraws to the
+// alternate screen.
+const claudeFullscreenSettings = `{"tui":"fullscreen"}`
+
+func claudeLaunchFlags(worktree bool) []string {
+	flags := []string{"--settings", claudeFullscreenSettings}
+	if worktree {
+		flags = append(flags, "--permission-mode", "acceptEdits")
+	}
+	return flags
+}
+
 // --- git helpers (fail-closed teardown guards) ---
 
 func gitOut(dir string, args ...string) (string, error) {
@@ -141,6 +165,9 @@ func cmdRecruit(args []string) {
 	if kind == "pi" {
 		die("recruit: --kind pi is refused (no shell-guard hook exists for pi; a pi sicario would be unguarded). Use claude or cursor.")
 	}
+	if kind == "claude" && hasOption(extra, "--settings") {
+		die("recruit: Claude --settings is managed by cartel (fullscreen rendering); do not override it")
+	}
 	execCmd, ok := kindExec(kind)
 	if !ok {
 		die("unsupported --kind '%s' (cursor|claude)", kind)
@@ -171,11 +198,6 @@ func cmdRecruit(args []string) {
 	}
 	if agentStatus(id) != "exited" {
 		die("an agent named '%s' is already live in Herdr", id)
-	}
-	// A retained report from a PREVIOUS sicario with this id must never be read
-	// as the new one's result: rotate it aside (kept once as .old).
-	if fileExists(reportFile(id)) {
-		_ = os.Rename(reportFile(id), reportFile(id)+".old")
 	}
 	if briefFile != "" {
 		b, err := os.ReadFile(briefFile)
@@ -267,16 +289,7 @@ func cmdRecruit(args []string) {
 	var autoflags []string
 	switch kind {
 	case "claude":
-		// Report-file access: --add-dir exposes the reports dir, and the scoped
-		// Write/Edit rules auto-approve writes THERE ONLY, so even a read-only
-		// (non-worktree) scout can deliver its report without a prompt and without
-		// gaining edit rights anywhere else.
-		rule := reportWriteRule()
-		autoflags = []string{"--add-dir", reportsDir,
-			"--allowedTools", "Write(" + rule + "),Edit(" + rule + ")"}
-		if worktree {
-			autoflags = append(autoflags, "--permission-mode", "acceptEdits")
-		}
+		autoflags = claudeLaunchFlags(worktree)
 	case "cursor":
 		autoflags = []string{"--trust"}
 		if worktree {
@@ -290,18 +303,14 @@ func cmdRecruit(args []string) {
 	startcmd = append(startcmd, autoflags...)
 	startcmd = append(startcmd, extra...)
 	// Deliver the brief as the agent's INITIAL PROMPT (trailing positional): the
-	// sicario boots already working on it, skipping the readiness poll + Enter
-	// dance. The report contract rides along; persisted state keeps the bare brief.
+	// sicario boots already working on it, skipping the readiness poll + Enter dance.
 	if brief != "" {
 		if kind == "claude" {
-			// claude's --add-dir/--allowedTools are VARIADIC (<dirs...>): without an
-			// explicit end-of-options separator they swallow the trailing brief as
-			// just another flag value, and the sicario boots IDLE with no prompt.
-			// The commander-style "--" closes option parsing (verified against the
-			// real CLI), so the brief always lands as the initial prompt.
+			// Claude accepts variadic flags in the user-supplied extras. Close option
+			// parsing so one can never swallow the trailing brief as another value.
 			startcmd = append(startcmd, "--")
 		}
-		startcmd = append(startcmd, brief+reportContract(id))
+		startcmd = append(startcmd, brief)
 	}
 	started, err := herdrOut(startcmd...)
 	if err != nil {
@@ -333,6 +342,7 @@ func cmdRecruit(args []string) {
 		s.Checkout = &checkout
 	}
 	if err := writeSicario(s); err != nil {
+		destroyContainer(container, worktree, wsid, tabid, cwd, checkout, id)
 		die("failed to persist state for '%s': %v", id, err)
 	}
 
@@ -363,32 +373,6 @@ func cmdRecruit(args []string) {
 	}
 	fmt.Printf("recruited %s  kind=%s  status=%s  %s%s%s\n",
 		id, kind, agentStatus(id), containerInfo, wtInfo, briefNote)
-}
-
-// reportContract is appended to every recruit brief. It redirects the sicario's
-// deliverable into its report FILE: a long answer streamed into the TUI gets
-// visually duplicated in scrollback every time the pane re-renders mid-stream
-// (the Don peeking at a working tab is a resize), so substance goes in the file
-// and the chat reply stays tiny. Firstmate's scout-report pattern.
-func reportContract(id string) string {
-	p := reportFile(id)
-	return "\n\n---\nDELIVERABLE CONTRACT (cartel): write your FULL findings/deliverable to the file " +
-		p + " (markdown; create or overwrite it; on follow-up orders append a dated section). " +
-		"ALL substance goes in that file - do NOT produce it as a long chat answer. " +
-		"Your final chat reply must be at most 3 short lines: the outcome, plus 'full report: " + p + "'. " +
-		"For code-change tasks the report states what changed, the branch, and how to verify."
-}
-
-// reportWriteRule renders reportsDir as a Claude Code permission-rule path glob
-// ("~/..." when under $HOME, absolute "//..." otherwise), so claude sicarios can
-// write their report without a permission prompt - and nothing else outside cwd.
-func reportWriteRule() string {
-	if home, err := os.UserHomeDir(); err == nil && home != "" {
-		if rel, err := filepath.Rel(home, reportsDir); err == nil && !strings.HasPrefix(rel, "..") {
-			return "~/" + filepath.ToSlash(rel) + "/**"
-		}
-	}
-	return "/" + reportsDir + "/**" // "//abs/path/**" - absolute-path rule form
 }
 
 // execAllowed reports whether a bare --exec name is on the allowlist.
@@ -549,32 +533,6 @@ func cmdWire(args []string) {
 		t = agentReadText(tgt, "visible", n)
 	}
 	fmt.Println(t)
-}
-
-// cmdReport prints a sicario's report file - the PRIMARY way to read a settled
-// sicario's result (never scrape the long answer out of the TUI: it may be
-// visually duplicated in scrollback and it dies with the pane). Deliberately
-// does NOT require live state: reports survive bury.
-func cmdReport(args []string) {
-	if len(args) == 0 {
-		die("report: missing <id>")
-	}
-	id := args[0]
-	if !validID(id) {
-		die("invalid id '%s'", id)
-	}
-	if len(args) > 1 && args[1] == "--path" {
-		fmt.Println(reportFile(id))
-		return
-	}
-	b, err := os.ReadFile(reportFile(id))
-	if err != nil {
-		die("no report from '%s' (expected %s). It may not have written one yet - fall back to: cartel wire %s", id, reportFile(id), id)
-	}
-	os.Stdout.Write(b)
-	if len(b) > 0 && b[len(b)-1] != '\n' {
-		fmt.Println()
-	}
 }
 
 func cmdOrder(args []string) {
@@ -832,8 +790,5 @@ func cmdBury(args []string) {
 		}
 	} else {
 		fmt.Printf("buried %s\n", id)
-	}
-	if fileExists(reportFile(id)) {
-		fmt.Printf("  report retained: cartel report %s\n", id)
 	}
 }
