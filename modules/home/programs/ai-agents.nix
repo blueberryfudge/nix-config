@@ -8,16 +8,22 @@ let
   cfg = config.ai-agents;
   dataDir = ../../../ai-agents;
   dataPath = subpath: dataDir + "/${subpath}";
+  # Model pins are OFF. Cursor disabled the 1M-context models these tiers used to
+  # resolve to (which errored any specialist that requested one), so every tier
+  # now resolves to null and specialists INHERIT the active session model
+  # (renderAgent omits the `model:` frontmatter key when the model is null).
+  # To re-pin later, drop the enabled slugs back into these fields (and restore
+  # the `models` block in defs/agents/code-engineer.nix).
   targetTierModels = {
     claude = {
-      fast = "claude-haiku-4-5-20251001";
-      balanced = "claude-sonnet-4-6";
-      reasoning = "claude-opus-4-6";
+      fast = null;
+      balanced = null;
+      reasoning = null;
     };
     cursor = {
-      fast = "fast";
-      balanced = "claude-sonnet-4-6";
-      reasoning = "claude-opus-4-6";
+      fast = null;
+      balanced = null;
+      reasoning = null;
     };
   };
   agentDefs = {
@@ -81,6 +87,19 @@ let
   ruleDefs = {
     shared-defaults = import (dataPath "defs/rules/shared-defaults.nix");
   };
+
+  # Canonical MCP server defs, one file per server (mirrors the defs/ layout used
+  # for agents/skills/hooks/rules). Each def exposes a provider-agnostic
+  # `mcpServers.<name>` attrset; the per-target renderers below translate it into
+  # each tool's native config shape.
+  mcpDefs = {
+    sourcegraph = import (dataPath "defs/mcps/sourcegraph.nix");
+  };
+
+  # Merge every def's `mcpServers` into a single attrset keyed by server name.
+  mcpServers = lib.foldl' (acc: def: acc // (def.mcpServers or { })) { } (
+    builtins.attrValues mcpDefs
+  );
 
   claudePermissions = {
     allow = [
@@ -270,6 +289,39 @@ let
     ) sharedSkillTexts;
   };
 
+  # Pi gains Claude-style subagents via the @tintinweb/pi-subagents package
+  # (loaded from the global package set, installed to ~/.pi/agent/npm on first
+  # run). Pi's builtin agents (general-purpose/Explore/Plan) are kept; our
+  # specialists are added alongside them, matching the Claude/Cursor rosters.
+  piSubagentsPackage = "npm:@tintinweb/pi-subagents@0.19.0";
+
+  # Global Pi settings (~/.pi/agent/settings.json). Kept minimal and
+  # provider-agnostic: it wires the subagents package and a default thinking
+  # level. Add `defaultProvider`/`defaultModel` here once you've settled on Pi
+  # model IDs (they differ from Claude Code slugs).
+  piSettings = {
+    packages = [ piSubagentsPackage ];
+    defaultThinkingLevel = "medium";
+  };
+
+  # API projects with EU data residency must use OpenAI's regional endpoint.
+  # A baseUrl-only override preserves Pi's built-in OpenAI model catalog.
+  piModels = {
+    providers.openai.baseUrl = "https://eu.api.openai.com/v1";
+  };
+
+  # Each specialist persona rendered as a pi-subagents agent file
+  # (~/.pi/agent/agents/<name>.md): Claude-style frontmatter + prompt body, same
+  # shape as the skill/Codex rendering. Model is omitted so subagents inherit
+  # Pi's default model. Pi scans this dir and skips symlinks (like skills), so
+  # these are seeded as real files via seedPiAgents below.
+  piAgentsDir = pkgs.symlinkJoin {
+    name = "pi-subagents-agents";
+    paths = lib.mapAttrsToList (
+      name: agent: pkgs.writeTextDir "${name}.md" (renderAgentAsSkill name agent)
+    ) agentDefs;
+  };
+
   hookFileName = name: hook: hook.fileName or "${name}.sh";
 
   targetHookBindings = target: hook: if builtins.hasAttr target hook then hook.${target} else [ ];
@@ -447,6 +499,34 @@ let
     hooks = cursorHookConfig;
   };
 
+  # Cursor's ~/.cursor/mcp.json declares remote servers with a bare `url`; Cursor
+  # runs the OAuth flow in-browser on first use, so no token/secret is needed.
+  # Map our canonical `type = "remote"` defs to that shape; pass stdio/local
+  # defs through unchanged.
+  cursorMcpServers = lib.mapAttrs (
+    _: server:
+    if (server.type or null) == "remote" then { inherit (server) url; } else server
+  ) mcpServers;
+
+  cursorMcpConfig = {
+    mcpServers = cursorMcpServers;
+  };
+
+  # Claude Code reads `mcpServers` ONLY from ~/.claude.json (user scope) or a
+  # project-root .mcp.json — never from settings.json (silently ignored there).
+  # ~/.claude.json is stateful and Claude-owned, so it can't be a read-only Nix
+  # symlink like .cursor/mcp.json; the seedClaudeMcp activation script below
+  # merges these entries into it instead. Claude wants `type = "http"` + `url`
+  # for remote servers, so map our canonical `type = "remote"` defs to that
+  # shape; pass stdio/local defs through unchanged.
+  claudeMcpServers = lib.mapAttrs (
+    _: server:
+    if (server.type or null) == "remote" then
+      { type = "http"; inherit (server) url; }
+    else
+      server
+  ) mcpServers;
+
   # Herdr session-identity hooks. Herdr's own `integration install` command
   # cannot be used for Claude/Cursor because it rewrites settings.json /
   # hooks.json in place, and this module renders those as read-only Nix-store
@@ -561,6 +641,9 @@ in
         // {
           ".cursor/hooks.json".text = builtins.toJSON cursorHooksWithHerdr + "\n";
         }
+        // lib.optionalAttrs (cursorMcpServers != { }) {
+          ".cursor/mcp.json".text = builtins.toJSON cursorMcpConfig + "\n";
+        }
         // lib.optionalAttrs cfg.enableHerdr {
           ".cursor/herdr-agent-state.sh".source = dataPath "defs/herdr/cursor-agent-state.sh";
         }
@@ -570,6 +653,8 @@ in
       }
       // lib.optionalAttrs cfg.enablePi {
         ".pi/agent/AGENTS.md".source = agentsMd;
+        ".pi/agent/models.json".text = builtins.toJSON piModels + "\n";
+        ".pi/agent/settings.json".text = builtins.toJSON piSettings + "\n";
       };
 
     home.activation = {
@@ -588,6 +673,41 @@ in
             $DRY_RUN_CMD cp -RL "$src" "$dest/$name"
             $DRY_RUN_CMD chmod -R u+w "$dest/$name"
           done
+        ''
+      );
+
+      # Pi's subagent discovery scans ~/.pi/agent/agents for real .md files and
+      # skips symlinks (same constraint as skills), so copy the generated
+      # specialist agents in as real files. Only our own <name>.md files are
+      # replaced; any other agents in the dir are left untouched.
+      seedPiAgents = lib.mkIf cfg.enablePi (
+        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          dest="$HOME/.pi/agent/agents"
+          $DRY_RUN_CMD mkdir -p "$dest"
+          for src in ${piAgentsDir}/*.md; do
+            name="$(basename "$src")"
+            $DRY_RUN_CMD rm -f "$dest/$name"
+            $DRY_RUN_CMD cp -L "$src" "$dest/$name"
+            $DRY_RUN_CMD chmod u+w "$dest/$name"
+          done
+        ''
+      );
+
+      # Claude Code stores user-scope MCP servers in ~/.claude.json (settings.json
+      # is silently ignored for MCP). That file is stateful and Claude-owned, so
+      # rather than symlinking it, merge our canonical MCP entries into its
+      # top-level `mcpServers` key. Ours win on name conflicts; any servers the
+      # user added by hand are preserved. jq can't edit in place, so write via a
+      # temp file + mv. Idempotent: re-asserted on every activation.
+      seedClaudeMcp = lib.mkIf (cfg.enableClaude && claudeMcpServers != { }) (
+        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          claude_cfg="$HOME/.claude.json"
+          servers=${lib.escapeShellArg (builtins.toJSON claudeMcpServers)}
+          [ -f "$claude_cfg" ] || $DRY_RUN_CMD echo '{}' > "$claude_cfg"
+          $DRY_RUN_CMD ${pkgs.jq}/bin/jq --argjson servers "$servers" \
+            '.mcpServers = ((.mcpServers // {}) + $servers)' "$claude_cfg" \
+            > "$claude_cfg.hm-mcp-tmp" \
+            && $DRY_RUN_CMD mv "$claude_cfg.hm-mcp-tmp" "$claude_cfg"
         ''
       );
 

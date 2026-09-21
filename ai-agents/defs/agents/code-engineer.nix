@@ -2,10 +2,8 @@
   description = "Execution-focused engineer. Use for feature work, bug fixes, refactors, config changes, and tests once the path is clear enough to act.";
   # TODO: Once Claude is installed locally, add a module option to make
   # `code-engineer` the default Claude agent instead of only an available agent.
-  models = {
-    claude = "claude-sonnet-4-6";
-    cursor = "gpt-5.4";
-  };
+  # Model pin removed (see targetTierModels in ai-agents.nix): inherits the
+  # active session model. Previously claude = "claude-sonnet-4-6", cursor = "gpt-5.4".
   claude = {
     permissionMode = "acceptEdits";
     tools = [

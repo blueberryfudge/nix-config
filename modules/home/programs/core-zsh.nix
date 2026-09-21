@@ -26,8 +26,9 @@
       pkgs.bat
       pkgs.wget
       pkgs.zoxide
-      pkgs.lunarctl
-    ];
+    ]
+    # lunarctl only exists via the work-only lunar-tools overlay.
+    ++ lib.optional config.core-zsh.enableLunar pkgs.lunarctl;
 
     programs.zsh = {
       enable = true;
@@ -192,9 +193,10 @@
             export PATH="$HOME/.local/bin:$PATH"
             export EDITOR='hx'
             export MANPAGER='hx +Man!'
-
-            # Lunar-specific environment variables
-            export LUNARCTL_REGISTRY="git=git@github.com:lunarway/lunarctl-registry.git"
+            ${lib.optionalString config.core-zsh.enableLunar ''
+              # Lunar-specific environment variables
+              export LUNARCTL_REGISTRY="git=git@github.com:lunarway/lunarctl-registry.git"
+            ''}
           '';
 
           zshViMode = lib.mkOrder 1100 ''
