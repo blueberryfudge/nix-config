@@ -34,47 +34,10 @@
       # unstable's 1.36.x so the minting binary matches the plugin.
       kubelogin-oidc = up.kubelogin-oidc;
 
-      # Pi coding agent (https://pi.dev) — distributed only via npm, so build it
-      # from the published tarball. `src` hash is npm's own SRI integrity.
-      # npmDepsHash must be filled after the first build (see the note below):
-      # run the build once, copy the "got: sha256-..." value from the error.
-      pi-coding-agent = up.buildNpmPackage rec {
-        pname = "pi-coding-agent";
-        version = "0.84.4";
-        src = up.fetchurl {
-          url = "https://registry.npmjs.org/@earendil-works/pi-coding-agent/-/pi-coding-agent-${version}.tgz";
-          hash = "sha512-jmOlrqUmvhh/siNWFRXjYLJzhKFIHNsAQaysRwzQPQFnPAaV/vhqHsLH/MBsIISA1Rjj7WTUFR3nJrpXoLx39w==";
-        };
-        # pi's shrinkwrap omits `integrity` for its own sibling packages, which
-        # makes prefetch-npm-deps panic ("non-git dependencies should have
-        # associated integrity"). The deps-fetcher sandbox has no node, so inject
-        # the registry SRI hashes with sed, then mirror the shrinkwrap to
-        # package-lock.json (which prefetch-npm-deps expects).
-        postPatch = ''
-          addIntegrity() {
-            sed -i "s|\(\"resolved\": \"https://registry.npmjs.org/@earendil-works/$1/-/$1-${version}.tgz\",\)|\1\n          \"integrity\": \"$2\",|" npm-shrinkwrap.json
-          }
-          addIntegrity pi-agent-core "sha512-HyUnjaOXj6oN/6SNcr8A1J/ElRQA50FtIE0XUTSKAQVqmdlb9qdojOyUQwF/jULE5+yOEtGuVgi/N1RnBiNG+g=="
-          addIntegrity pi-ai "sha512-AClAZxf5+c4RRu44NJPS6wyQy+Nmq+Mzyyrdvm4ZVMNuixelO02RZX4G4Aq1F145Yzp43wnM5S+hLlSI7ypfVw=="
-          addIntegrity pi-client "sha512-q398WY/3ZQHTizk7IKxApzqFV0xt4yM9LkSkwyqeLK5Bj5RwRjOWxESt26z4LgNp4O+8hqhqFPf/8fj4H5rE4A=="
-          addIntegrity pi-protocol "sha512-acyE9ozxkMiWiz/xyWpU0O9vwnYv0hyG889Vniv6Sg9c9zfsX+8MePnDNphBacY2Fvm1rxdsGmiVDSZl9yuDFA=="
-          addIntegrity pi-telemetry "sha512-8e2CuxM+ht+hedQXTZmi5JVl6/xDK9RpSDL2+MbITevKYQhMZ/z6lJOTFgox3HQyGxO8mOZEtYGVeQNaD4OzqA=="
-          addIntegrity pi-tui "sha512-nPUnwDkLtupPXnZQYrCwPFcuTydCDqTY6ZbFqhsL4S4kVq0AT418kPa/6uXwtaCD+MjBNBltb7ScTYX65yeE1w=="
-          cp npm-shrinkwrap.json package-lock.json
-
-          # Upstream ships a production-only shrinkwrap (no dev deps), but
-          # package.json still lists devDependencies. That mismatch makes
-          # `npm ci` try to fetch dev-only packages (e.g. @types/cross-spawn),
-          # which fails offline (ENOTCACHED). Drop devDependencies so the
-          # manifest matches the lockfile; dist/ is prebuilt so we never need
-          # them. package.json is tab-indented.
-          sed -i '/^\t"devDependencies": {/,/^\t},/d' package.json
-        '';
-        npmDepsHash = "sha256-TMCFuLn2EbzAPrTN0XGZoJj7sHNqMA77YNFCRcU0JWI=";
-        dontNpmBuild = true;           # dist/ is prebuilt in the tarball
-        npmFlags = [ "--ignore-scripts" ];
-        nodejs = up.nodejs_22;         # pi requires node >= 22.19
-      };
+      # Pi coding agent — now a first-class package in this repo built from a
+      # committed lockfile (packages/pi). Bump it with `nix run .#update-packages`.
+      # Aliased to the name the work home config already expects.
+      pi-coding-agent = personal-config.packages.${prev.stdenv.hostPlatform.system}.pi;
 
       # Herdr agent multiplexer, from its official flake.
       herdr = herdr.packages.${prev.stdenv.hostPlatform.system}.default;
